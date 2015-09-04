@@ -76,7 +76,7 @@ public class MyCompressorOutputStream extends OutputStream
 	public void write(byte[] byteArr) throws IOException 
 	{
 		super.write(byteArr);
-		if(count==0)
+		if(count>0)
 		{
 			out.write((byte)previousByte);
 			out.write((byte)count);

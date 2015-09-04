@@ -38,7 +38,9 @@ public class MyDecompressorInputStream extends InputStream {
 	public void setIn(InputStream in) {
 		this.in = in;
 	}
-	
+	/**
+	 * reading the compressed data from input stream source,and decompress it
+	 */
 	@Override
 	public int read() throws IOException 
 	{
@@ -64,24 +66,5 @@ public class MyDecompressorInputStream extends InputStream {
 	
 	
 	
-	/**
-	 * function that return count times the number num
-	 * @param num the number we return
-	 * @param count the amount of times we return num
-	 * @return count times number
-	 */
-	protected int getNumberAmountOfTimes(int num,int count)
-	{
-		
-		if(count==1)
-		{
-			return num;
-		}
-		else
-		{
-			
-			getNumberAmountOfTimes(num, count-1);
-			return num;
-		}
-	}
+	
 }
