@@ -81,6 +81,8 @@ public class Maze3d
 	{
 		ByteArrayInputStream in=new ByteArrayInputStream(byteArr);
 		DataInputStream dis=new DataInputStream(in);
+		//creating a stream that reads primitive types easier
+		
 		this.size_x=dis.readInt();
 		this.size_y=dis.readInt();
 		this.size_z=dis.readInt();
@@ -93,7 +95,7 @@ public class Maze3d
 			{
 				for(int n=0;n<size_z;n++)
 				{
-					maze[i][j][n]=dis.read();
+					maze[i][j][n]=dis.read();//reads byte
 					
 				}
 			}
@@ -515,6 +517,7 @@ public class Maze3d
 	 */
 	public byte[] toByteArray() throws IOException
 	{
+		//creating a stream that reads primitive types easier
 		ByteArrayOutputStream bb=new ByteArrayOutputStream();
 		DataOutputStream dis=new DataOutputStream(bb);
 		dis.writeInt(size_x);

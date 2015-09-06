@@ -47,19 +47,20 @@ public class MyDecompressorInputStream extends InputStream {
 		
 		if(count<=0)
 		{
-			if((currByte=in.read())==-1)
+			if((currByte=in.read())==-1)//if the data is ended
 			{
 				return -1;
 			}
-			if((count=in.read())==-1)
+			if((count=in.read())==-1)//if there is problem with the sequence of bytes
 			{
 				throw (new IOException("Expected counter,invalid byte array!"));
 			}
-			if(count<=0)
+			if(count<=0)//counter is negative
 			{
 				throw (new IOException("Invalid Counter"));
 			}
 		}
+		//returning currByte count times
 		count--;
 		return currByte;
 	}
