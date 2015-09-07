@@ -13,4 +13,7 @@ public interface Controller {
 	
 	public HashMap<String, Command> getStringToCommand();
 	
+	public void passDirPath(String[] dirArray);
+	public void passError(String message);
+	
 }

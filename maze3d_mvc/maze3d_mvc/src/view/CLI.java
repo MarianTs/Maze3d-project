@@ -3,6 +3,8 @@ package view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import controller.Command;
@@ -24,16 +26,36 @@ public class CLI extends Thread{
 		new Thread(new Runnable() {
 			public void run() {
 				String line;
-				Command command;
+				Command command=null;
 				try 
 				{
 					while((line=in.readLine()).intern()!="exit")
-					{						
-						if((command=stringToCommand.get(line)) != null)
+					{
+
+						ArrayList<String> paramArray=new ArrayList<String>();
+						//paramArray.add(line.substring(line.lastIndexOf(" ")+1));
+						
+						while(!(line.isEmpty()))
 						{
-							command.doCommand();
+							
+							if((command=stringToCommand.get(line)) != null)
+							{
+								Collections.reverse(paramArray);
+								command.doCommand(paramArray.toArray(new String[paramArray.size()]));
+								break;
+							}
+							if(line.indexOf(" ")==-1)//we ended the line
+							{
+								break;
+							}
+							
+							paramArray.add(line.substring(line.lastIndexOf(" ")+1));
+							line=line.substring(0, line.lastIndexOf(" "));	//cutting till " " (not including)
+							
 						}
-						else
+						
+						
+						if(command==null)
 						{
 							out.println("Command not found!");
 							out.flush();

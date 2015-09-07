@@ -1,5 +1,7 @@
 package Model;
 
+import java.io.File;
+
 import controller.Controller;
 
 public abstract class CommonModel implements Model 

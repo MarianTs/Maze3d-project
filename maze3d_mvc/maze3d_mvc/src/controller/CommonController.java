@@ -7,13 +7,16 @@ import view.View;
 
 public abstract class CommonController implements Controller 
 {
+	
 	Model m;
 	View v;
 	HashMap<String, Command> stringToCommand;
 	
+	
 	public CommonController() 
 	{
 		super();
+		
 		stringToCommand=new HashMap<String, Command>();
 		initCommands();
 	}
@@ -42,6 +45,10 @@ public abstract class CommonController implements Controller
 	public void setStringToCommand(HashMap<String, Command> stringToCommand) {
 		this.stringToCommand = stringToCommand;
 	}
+	
+	
+	
+	
 	
 
 }
