@@ -29,6 +29,7 @@ public class CLI extends Thread{
 				Command command=null;
 				try 
 				{
+					//out.println("Please Enter command:");
 					while((line=in.readLine()).intern()!="exit")
 					{
 
@@ -40,6 +41,7 @@ public class CLI extends Thread{
 							
 							if((command=stringToCommand.get(line)) != null)
 							{
+								
 								Collections.reverse(paramArray);
 								command.doCommand(paramArray.toArray(new String[paramArray.size()]));
 								break;

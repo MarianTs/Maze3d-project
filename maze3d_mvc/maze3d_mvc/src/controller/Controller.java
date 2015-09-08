@@ -3,6 +3,7 @@ package controller;
 import java.util.HashMap;
 
 import Model.Model;
+
 import view.View;
 
 public interface Controller {
@@ -15,5 +16,7 @@ public interface Controller {
 	
 	public void passDirPath(String[] dirArray);
 	public void passError(String message);
-	
+	public void passGenerate3dMaze(String message);
+	public void passDisplayName(byte[] byteArr);
+	public void passDisplayCrossSectionBy(int[][] crossSection);
 }
