@@ -50,6 +50,8 @@ public class Maze3d
 			}
 		}
 	}
+	
+	
 	/**
 	 * construct default maze 10*10*10 diameter
 	 */
