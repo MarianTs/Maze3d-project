@@ -36,7 +36,7 @@ public class MyController extends CommonController
 
 			@Override
 			public void doCommand(String[] args) {
-				v.displayHelp();
+				v.showHelp();
 				
 			}
 			
@@ -63,27 +63,53 @@ public class MyController extends CommonController
 			}
 		
 		});
+		stringToCommand.put("save maze",new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleSaveMaze(args);
+				
+			}
+		});
+		stringToCommand.put("load maze", new Command(){
+
+			@Override
+			public void doCommand(String[] args) {
+				m.handleLoadMaze(args);
+				
+			}
+			
+		});
 	}
 	public void passDirPath(String[] dirArray)
 	{
-		v.displayDirPath(dirArray);
+		v.showDirPath(dirArray);
 	}
 	public void passError(String message)
 	{
-		v.displayError(message);
+		v.showError(message);
 	}
 	public void passGenerate3dMaze(String message)
 	{
-		v.displayGenerate3dMaze(message);
+		v.showGenerate3dMaze(message);
 	}
 	
 	public void passDisplayName(byte[] byteArr)
 	{
-		v.displayCommandDisplayName(byteArr);
+		v.showDisplayName(byteArr);
 	}
 	
 	public void passDisplayCrossSectionBy(int[][] crossSection)
 	{
-		v.displayCommandDisplayCrossSectionBy(crossSection);
+		v.showDisplayCrossSectionBy(crossSection);
+	}
+	
+	public void passSaveMaze(String str)
+	{
+		v.showSaveMaze(str);
+	}
+	public void passLoadMaze(String str)
+	{
+		v.showLoadMaze(str);
 	}
 }

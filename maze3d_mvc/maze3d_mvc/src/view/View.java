@@ -5,10 +5,13 @@ package view;
 public interface View {
 	public void start();
 
-	public void displayDirPath(String[] dirArray);
-	public void displayError(String message);
-	public void displayHelp();
-	public void displayGenerate3dMaze(String message);
-	public void displayCommandDisplayName(byte[] byteArr);
-	public void displayCommandDisplayCrossSectionBy(int[][] crossSection);
+	public void showDirPath(String[] dirArray);
+	public void showError(String message);
+	public void showHelp();
+	public void showGenerate3dMaze(String message);
+	public void showDisplayName(byte[] byteArr);
+	public void showDisplayCrossSectionBy(int[][] crossSection);
+	
+	public void showSaveMaze(String str);
+	public void showLoadMaze(String str);
 }

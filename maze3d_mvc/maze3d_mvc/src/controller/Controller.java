@@ -19,4 +19,6 @@ public interface Controller {
 	public void passGenerate3dMaze(String message);
 	public void passDisplayName(byte[] byteArr);
 	public void passDisplayCrossSectionBy(int[][] crossSection);
+	public void passSaveMaze(String str);
+	public void passLoadMaze(String str);
 }

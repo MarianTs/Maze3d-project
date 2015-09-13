@@ -27,7 +27,7 @@ public class MyView extends CommonView
 		cli.start();
 		
 	}
-	public void displayDirPath(String[] dirArray)
+	public void showDirPath(String[] dirArray)
 	{
 		System.out.println("The files and directories in this path are:");
 		for(String s:dirArray)
@@ -35,17 +35,17 @@ public class MyView extends CommonView
 			System.out.println(s);
 		}
 	}
-	public void displayError(String message)
+	public void showError(String message)
 	{
 		System.out.println(message);
 	}
 	
-	public void displayGenerate3dMaze(String message)
+	public void showGenerate3dMaze(String message)
 	{
 		System.out.println(message);
 	}
 	
-	public void displayCommandDisplayName(byte[] byteArr)
+	public void showDisplayName(byte[] byteArr)
 	{
 		try {
 			Maze3d maze3d=new Maze3d(byteArr);
@@ -90,7 +90,7 @@ public class MyView extends CommonView
 	}
 	
 	
-	public void displayCommandDisplayCrossSectionBy(int[][] crossSection)
+	public void showDisplayCrossSectionBy(int[][] crossSection)
 	{
 		for(int[] a:crossSection)
 		{
@@ -101,9 +101,16 @@ public class MyView extends CommonView
 			System.out.println();
 		}
 	}
+	public void showSaveMaze(String str)
+	{
+		System.out.println(str);
+	}
+	public void showLoadMaze(String str)
+	{
+		System.out.println(str);
+	}
 	
-	
-	public void displayHelp()
+	public void showHelp()
 	{
 		System.out.println("Help Center:");
 		System.out.println("dir <path>                                           -display the files and directories in this specific path.");
