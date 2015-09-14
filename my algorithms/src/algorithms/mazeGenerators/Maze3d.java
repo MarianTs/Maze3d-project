@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @author Marian
  *
  */
-public class Maze3d 
+public class Maze3d
 {	
 	private int maze[][][];
 	private int size_x;
@@ -544,6 +544,19 @@ public class Maze3d
 		dis.writeInt(goalPosition.getZ());
 		return bb.toByteArray();
 		
+	}
+	
+	@Override
+	public int hashCode()  {
+		
+		try {
+			return this.toByteArray().hashCode();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+			return -1;
+			
+		}
 	}
 	
 	/**
