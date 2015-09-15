@@ -4,7 +4,11 @@ import java.util.HashMap;
 
 import Model.Model;
 import view.View;
-
+/**
+ * abstract class which has the common methods and data members of all controllers
+ * @author Marian
+ *
+ */
 public abstract class CommonController implements Controller 
 {
 	
@@ -12,7 +16,9 @@ public abstract class CommonController implements Controller
 	View v;
 	HashMap<String, Command> stringToCommand;
 	
-	
+	/**
+	 * constructor
+	 */
 	public CommonController() 
 	{
 		super();
@@ -32,23 +38,27 @@ public abstract class CommonController implements Controller
 		
 		
 	}
-
-	public Model getM() {
-		return m;
-	}
-
+	
+	
+	/**
+	 * sets the model of the controller,to whom it passes the command to calculate
+	 */
 	public void setM(Model m) {
 		this.m = m;
 	}
 
-	public View getV() {
-		return v;
-	}
-
+	
+	/**
+	 * sets the view of the controller,to whom it passes the command to be displayed
+	 */
 	public void setV(View v) {
 		this.v = v;
 		v.setStringToCommand(stringToCommand);
 	}
+	
+	/**
+	 * initialize the commands
+	 */
 	protected abstract void initCommands();
 
 }

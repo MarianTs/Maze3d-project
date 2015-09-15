@@ -29,7 +29,11 @@ import algotithms.demo.Maze3dSearchable;
 import controller.Controller;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
-
+/**
+ * generating the code behind each command
+ * @author Marian
+ *
+ */
 
 public class MyModel extends CommonModel {
 	HashMap<String, Maze3d> mazeCollection;//hash map with key-name of maze,value-maze 3d object
@@ -86,11 +90,8 @@ public class MyModel extends CommonModel {
 			return;
 		}
 		try {
-			if ((Integer.parseInt(paramArray[1]) <= 0) || (Integer.parseInt(paramArray[2]) <= 0)
-					|| (Integer.parseInt(paramArray[3]) <= 0)) {// checking if
-																// the sizes of
-																// the maze
-																// passed valid
+			if ((Integer.parseInt(paramArray[1]) <= 0) || (Integer.parseInt(paramArray[2]) <= 0)|| (Integer.parseInt(paramArray[3]) <= 0)) 
+			{// checking if the sizes of the maze passed valid
 				c.passError("Invalid parameters");
 				return;
 			}
@@ -152,22 +153,20 @@ public class MyModel extends CommonModel {
 	 * {@inheritDoc}
 	 */
 	public void handleDisplayCrossSectionBy(String[] paramArray) {
-		if ((paramArray.length != 4) || (paramArray[2].intern() != "for")) {
+		if ((paramArray.length != 4) || (paramArray[2].intern() != "for")) 
+		{
 			c.passError("Invalid amount of parameters");
 			return;
 		}
 	
 
-		if (!mazeCollection.containsKey(paramArray[3].toString())) // checking
-																	// if maze
-																	// is in the
-																	// collection
+		if (!mazeCollection.containsKey(paramArray[3].toString())) // checking if maze is in the collection
 		{
 			c.passError("This maze doesn't exists");
 			return;
 		}
 
-		// Maze3d maze=mazeCollection.get(key);
+		
 		if (paramArray[0].intern() == "x") {
 			Maze3d maze = mazeCollection.get(paramArray[3].toString());
 			try {
@@ -182,20 +181,28 @@ public class MyModel extends CommonModel {
 				return;
 			}
 
-		} else if (paramArray[0].intern() == "y") {
+		} else if (paramArray[0].intern() == "y") 
+		{
 			Maze3d maze = mazeCollection.get(paramArray[3].toString());
-			try {
+			try 
+			{
 				int[][] crossSection = maze.getCrossSectionByY(Integer.parseInt(paramArray[1]));
 				c.passDisplayCrossSectionBy(crossSection);
 				return;
-			} catch (NumberFormatException e) {
+			} 
+			catch (NumberFormatException e) 
+			{
 				c.passError("Invalid parameters");
 				return;
-			} catch (IndexOutOfBoundsException e) {
+			} 
+			catch (IndexOutOfBoundsException e) 
+			{
 				c.passError("Invalid y coordinate");
 				return;
 			}
-		} else if (paramArray[0].intern() == "z") {
+		} 
+		else if (paramArray[0].intern() == "z") 
+		{
 			Maze3d maze = mazeCollection.get(paramArray[3].toString());
 			try {
 				int[][] crossSection = maze.getCrossSectionByZ(Integer.parseInt(paramArray[1]));
@@ -219,35 +226,41 @@ public class MyModel extends CommonModel {
 	 */
 	public void handleSaveMaze(String[] paramArray) {
 
-		if (paramArray.length != 2) {
+		if (paramArray.length != 2) 
+		{
 			c.passError("Invalid amount of parameters");
 			return;
 		}
 
-		try {
+		
 
-			if (!(mazeCollection.containsKey(paramArray[0]))) {
-				c.passError("maze doesn't exists");
-				return;
-			}
-			//saving the name of the maze,with the file where the maze is saved,in order to use it later in file size command
-			mazeToFile.put(paramArray[0], paramArray[1]);
-			
-			Maze3d maze = mazeCollection.get(paramArray[0].toString());
+		if (!(mazeCollection.containsKey(paramArray[0]))) 
+		{
+			c.passError("maze doesn't exists");
+			return;
+		}
+		//saving the name of the maze,with the file where the maze is saved,in order to use it later in file size command
+		mazeToFile.put(paramArray[0], paramArray[1]);
 
-			int size = maze.toByteArray().length;
+		Maze3d maze = mazeCollection.get(paramArray[0].toString());
 
+		int size = maze.toByteArray().length;
+		try 
+		{
 			MyCompressorOutputStream out = new MyCompressorOutputStream(new FileOutputStream(paramArray[1].toString()));
-
+		
 			out.write(ByteBuffer.allocate(4).putInt(size).array());// first writing the size of the maze
 			out.write(maze.toByteArray());
 			c.passSaveMaze(paramArray[0].toString() + " has been saved");
 			out.close();
 			return;
-		} catch (FileNotFoundException e) {
+		} 
+		catch (FileNotFoundException e) 
+		{
 			c.passError("File not found");
 			return;
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -255,28 +268,30 @@ public class MyModel extends CommonModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleLoadMaze(String[] paramArray) {
-		if (paramArray.length != 2) {
+	public void handleLoadMaze(String[] paramArray)
+	{
+		if (paramArray.length != 2) 
+		{
 			c.passError("Invalid amount of parameters");
 			return;
 		}
 
-		try {
-
-			if (mazeCollection.containsKey(paramArray[1])) {
-				c.passError("Invalid name,this name is taken");
+		if (mazeCollection.containsKey(paramArray[1])) {
+			c.passError("Invalid name,this name is taken");
+			return;
+		}
+		if(mazeToFile.containsKey(paramArray[1]))
+		{
+			if(mazeToFile.get(paramArray[1])!=paramArray[0])
+			{
+				//!!!!
+				c.passError("This name already exists");
 				return;
 			}
-			if(mazeToFile.containsKey(paramArray[1]))
-			{
-				if(mazeToFile.get(paramArray[1])!=paramArray[0])
-				{
-					//!!!!
-					c.passError("This name already exists");
-					return;
-				}
-			}
-			mazeToFile.put(paramArray[1], paramArray[0]);
+		}
+		mazeToFile.put(paramArray[1], paramArray[0]);
+			
+		try {	
 			MyDecompressorInputStream in = new MyDecompressorInputStream(new FileInputStream(paramArray[0].toString()));
 
 			// The ByteArrayOutputStream class stream creates a buffer in memory
@@ -306,7 +321,7 @@ public class MyModel extends CommonModel {
 			c.passError("File not found");
 			return;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -315,12 +330,15 @@ public class MyModel extends CommonModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleMazeSize(String[] paramArray) {
-		if (paramArray.length != 1) {
+	public void handleMazeSize(String[] paramArray) 
+	{
+		if (paramArray.length != 1) 
+		{
 			c.passError("Invalid number of parameters");
 			return;
 		}
-		if (!mazeCollection.containsKey(paramArray[0])) {
+		if (!mazeCollection.containsKey(paramArray[0])) 
+		{
 			c.passError("maze doesn't exists");
 			return;
 		}
@@ -474,6 +492,9 @@ public class MyModel extends CommonModel {
 			return;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleExitCommand(String[] emptyArr)
 	{
 		threadPool.shutdown();

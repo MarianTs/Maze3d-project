@@ -19,17 +19,5 @@ public abstract class CommonModel implements Model
 		super();
 		this.c = c;
 	}
-	/**
-	 * gets controller 
-	 * @return
-	 */
-	public Controller getC() {
-		return c;
-	}
-
-	public void setC(Controller c) {
-		this.c = c;
-	}
-	
 
 }

@@ -5,15 +5,23 @@ package controller;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 
-
+/**
+ * specify the current controller,which passes the commands from view to model
+ * @author Marian
+ *
+ */
 public class MyController extends CommonController 
 {
-
+	/**
+	 * constructor
+	 */
 	public MyController() {
 		super();
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void initCommands() 
 	{
@@ -123,50 +131,80 @@ public class MyController extends CommonController
 		
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passDirPath(String[] dirArray)
 	{
 		v.showDirPath(dirArray);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passError(String message)
 	{
 		v.showError(message);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passGenerate3dMaze(String message)
 	{
 		v.showGenerate3dMaze(message);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passDisplayName(byte[] byteArr)
 	{
 		v.showDisplayName(byteArr);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passDisplayCrossSectionBy(int[][] crossSection)
 	{
 		v.showDisplayCrossSectionBy(crossSection);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passSaveMaze(String str)
 	{
 		v.showSaveMaze(str);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passLoadMaze(String str)
 	{
 		v.showLoadMaze(str);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passMazeSize(int size)
 	{
 		v.showMazeSize(size);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passFileSize(long length)
 	{
 		v.showFileSize(length);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passSolve(String message)
 	{
 		v.showSolve(message);
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void passDisplaySolution(Solution<Position> sol )
 	{
 		v.showDisplaySolution(sol);

@@ -1,6 +1,14 @@
 package controller;
-
-public interface Command {
-	
+/**
+ * defines the command interface,where each command must implement doCommand
+ * @author Marian
+ *
+ */
+public interface Command 
+{
+	/**
+	 * defines what each command do.
+	 * @param args array of parameters
+	 */
 	public void doCommand(String[] args);
 }

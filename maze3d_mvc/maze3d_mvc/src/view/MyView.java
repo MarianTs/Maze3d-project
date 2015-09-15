@@ -18,7 +18,10 @@ public class MyView extends CommonView
 {
 	CLI cli;
 	HashMap<String,Command> stringToCommand;
-	
+	/**
+	 * constructor usong fields
+	 * @param c controller of this view
+	 */
 	public MyView(Controller c) 
 	{
 		super(c);
@@ -26,7 +29,9 @@ public class MyView extends CommonView
 		cli=new CLI(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void start() {
 		cli.start();
@@ -35,13 +40,17 @@ public class MyView extends CommonView
 	
 	
 	
-
+	/**
+	 * setting the hash map that was initialized in the controller to the view
+	 */
 	public void setStringToCommand(HashMap<String, Command> stringToCommand) 
 	{
 		this.stringToCommand = stringToCommand;
 		cli.setStringToCommand(stringToCommand);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDirPath(String[] dirArray)
 	{
 		System.out.println("The files and directories in this path are:");
@@ -50,16 +59,23 @@ public class MyView extends CommonView
 			System.out.println(s);
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showError(String message)
 	{
 		System.out.println(message);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showGenerate3dMaze(String message)
 	{
 		System.out.println(message);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplayName(byte[] byteArr)
 	{
 		try {
@@ -93,53 +109,68 @@ public class MyView extends CommonView
 				}
 				aString+="\n\n";
 			}
+		
 			System.out.println(aString);
 			System.out.println("The start position: ("+maze3d.getStartPosition().getX()+","+maze3d.getStartPosition().getY()+","+maze3d.getStartPosition().getZ()+")");
 			System.out.println("The goal position:  ("+maze3d.getGoalPosition().getX()+","+maze3d.getGoalPosition().getY()+","+maze3d.getGoalPosition().getZ()+")");
 		} 
 		catch (IOException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplayCrossSectionBy(int[][] crossSection)
 	{
 		for(int[] a:crossSection)
 		{
 			for(int b:a)
 			{
-				System.out.print(b);
+				System.out.print(b+" ");
 			}
 			System.out.println();
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showSaveMaze(String str)
 	{
 		System.out.println(str);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showLoadMaze(String str)
 	{
 		System.out.println(str);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showMazeSize(int size)
 	{
 		System.out.println("The size of the maze is "+size);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showFileSize(long length)
 	{
 		System.out.println("The size of the maze in file is: "+length);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showSolve(String message)
 	{
 		System.out.println(message);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplaySolution(Solution<Position> sol)
 	{
 		ArrayList<State<Position>> al=sol.getAL();
@@ -158,7 +189,9 @@ public class MyView extends CommonView
 		}
 		System.out.println(s);
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showHelp()
 	{
 		System.out.println("Help Center:");
