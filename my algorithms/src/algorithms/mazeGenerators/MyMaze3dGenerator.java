@@ -21,10 +21,10 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 		ArrayList<Position> AL=new ArrayList<Position>();//array of walls
 		int i,j,n;
 		int randomCell=0;
-		Position entrence=new Position();
+		Position entrance=new Position();
 		Position exit=new Position();
 		Position currentPos=new Position();
-		int numOfEntrancesFound=0;
+		
 		Random rand=new Random();
 		myMaze.fillWithWalls();//fill 1 all over the maze
 		
@@ -56,7 +56,30 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			AL.remove(randomCell);
 		}
 		
-		//till now we don't have any exits,now I will generate them
+		//till now we dont have any exits	
+		entrance=findExits(myMaze);
+		exit=findExits(myMaze);
+		myMaze.setStartPosition(entrance);
+		myMaze.setGoalPosition(exit);
+		
+		return myMaze;
+	}
+	
+	/**
+	 * generating exits in builded maze
+	 * @param myMaze the maze we generate there the exits
+	 * @return the position of the exit
+	 */
+	private Position findExits(Maze3d myMaze)
+	{
+		Random rand=new Random();
+		int i,j,n;
+		int numOfEntrancesFound=0;
+		Position entrance=new Position();
+		int size_x=myMaze.getSize_x();
+		int size_y=myMaze.getSize_y();
+		int size_z=myMaze.getSize_z();
+		
 		int wall=rand.nextInt(3);//choose the sides that will have the exits 
 		switch (wall) {
 		case 0:
@@ -69,25 +92,8 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 						//check if there is a an empty space so we can insert the entrance nearby
 					{
 						myMaze.setValueInPlace(n, i, j, 0);
-						entrence=new Position(n,i,j);
+						entrance=new Position(n,i,j);
 						numOfEntrancesFound++;//we found one exit..now lets stop and find the next one
-					}
-				}
-
-			}
-			if(n==0)//if the first exit was in zero lets look for the next exit in the other side.
-				n=size_x-1;
-			else
-				n=0;
-			for(i=0;i<size_y;i++)
-			{
-				for(j=0;j<size_z;j++)
-				{
-					if((numOfEntrancesFound==1)&&(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1))
-					{
-						myMaze.setValueInPlace(n, i, j, 0);
-						exit=new Position(n,i,j);
-						numOfEntrancesFound++;
 					}
 				}
 
@@ -102,24 +108,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(i,n,j), myMaze)==1))
 					{
 						myMaze.setValueInPlace(i, n, j, 0);
-						entrence=new Position(i,n,j);
-						numOfEntrancesFound++;
-					}
-				}
-
-			}
-			if(n==0)
-				n=size_y-1;
-			else
-				n=0;
-			for(i=0;i<size_x;i++)
-			{
-				for(j=0;j<size_z;j++)
-				{
-					if((numOfEntrancesFound==1)&&(countNumberOfZerosAroundCell(new Position(i,n,j), myMaze)==1))
-					{
-						myMaze.setValueInPlace(i, n, j, 0);
-						exit=new Position(i,n,j);
+						entrance=new Position(i,n,j);
 						numOfEntrancesFound++;
 					}
 				}
@@ -135,24 +124,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(i,j,n), myMaze)==1))
 					{
 						myMaze.setValueInPlace(i, j, n, 0);
-						entrence=new Position(i,j,n);
-						numOfEntrancesFound++;
-					}
-				}
-
-			}
-			if(n==0)
-				n=size_z-1;
-			else
-				n=0;
-			for(i=0;i<size_x;i++)
-			{
-				for(j=0;j<size_y;j++)
-				{
-					if((numOfEntrancesFound==1)&&(countNumberOfZerosAroundCell(new Position(i,j,n), myMaze)==1))
-					{
-						myMaze.setValueInPlace(i,j,n, 0);
-						exit=new Position(i,j,n);
+						entrance=new Position(i,j,n);
 						numOfEntrancesFound++;
 					}
 				}
@@ -168,39 +140,16 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1))
 					{
 						myMaze.setValueInPlace(n, i, j, 0);
-						entrence=new Position(n,i,j);
-						numOfEntrancesFound++;
-					}
-				}
-
-			}
-			if(n==0)
-				n=size_x-1;
-			else
-				n=0;
-			for(i=0;i<size_y;i++)
-			{
-				for(j=0;j<size_z;j++)
-				{
-					if((numOfEntrancesFound==1)&&(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1))
-					{
-						myMaze.setValueInPlace(n, i, j, 0);
-						exit=new Position(n,i,j);
+						entrance=new Position(n,i,j);
 						numOfEntrancesFound++;
 					}
 				}
 
 			}
 			break;
-
-		}		
-		
-		myMaze.setStartPosition(entrence);
-		myMaze.setGoalPosition(exit);
-		
-		return myMaze;
+		}
+		return entrance;
 	}
-	
 	
 	
 	/**

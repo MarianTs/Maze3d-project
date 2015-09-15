@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -517,46 +518,47 @@ public class Maze3d
 	 * @return byte array with the maze details
 	 * @throws IOException 
 	 */
-	public byte[] toByteArray() throws IOException
+	public byte[] toByteArray() 
 	{
 		//creating a stream that reads primitive types easier
 		ByteArrayOutputStream bb=new ByteArrayOutputStream();
 		DataOutputStream dis=new DataOutputStream(bb);
-		dis.writeInt(size_x);
-		dis.writeInt(size_y);
-		dis.writeInt(size_z);
-		for(int i=0;i<size_x;i++)
-		{
-			for(int j=0;j<size_y;j++)
+		try {
+			dis.writeInt(size_x);
+
+			dis.writeInt(size_y);
+			dis.writeInt(size_z);
+			for(int i=0;i<size_x;i++)
 			{
-				for(int n=0;n<size_z;n++)
+				for(int j=0;j<size_y;j++)
 				{
-					dis.write(maze[i][j][n]);
+					for(int n=0;n<size_z;n++)
+					{
+						dis.write(maze[i][j][n]);
+					}
 				}
 			}
-		}
-		dis.writeInt(startPosition.getX());
-		dis.writeInt(startPosition.getY());
-		dis.writeInt(startPosition.getZ());
-		
-		dis.writeInt(goalPosition.getX());
-		dis.writeInt(goalPosition.getY());
-		dis.writeInt(goalPosition.getZ());
-		return bb.toByteArray();
-		
-	}
-	
-	@Override
-	public int hashCode()  {
-		
-		try {
-			return this.toByteArray().hashCode();
+			dis.writeInt(startPosition.getX());
+			dis.writeInt(startPosition.getY());
+			dis.writeInt(startPosition.getZ());
+
+			dis.writeInt(goalPosition.getX());
+			dis.writeInt(goalPosition.getY());
+			dis.writeInt(goalPosition.getZ());
+			
 		} catch (IOException e) {
 			
 			e.printStackTrace();
-			return -1;
-			
-		}
+		}	
+		return bb.toByteArray();
+	}
+	/**
+	 * returning hashCode based on the content of the byte array representing the maze
+	 */
+	@Override
+	public int hashCode()  
+	{
+		return Arrays.hashCode(this.toByteArray());
 	}
 	
 	/**
