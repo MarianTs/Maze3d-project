@@ -9,24 +9,29 @@ import java.util.HashMap;
 
 import controller.Command;
 
+
 public class CLI extends Thread{
 	BufferedReader in;
 	PrintWriter out;
 	HashMap<String,Command> stringToCommand;
 	
-	CLI(BufferedReader in, PrintWriter out,HashMap<String, Command> stringToCommand) {
+	CLI(BufferedReader in, PrintWriter out) {
 		super();
 		this.in = in;
 		this.out = out;
-		this.stringToCommand=stringToCommand;
+		
 	}
+	
 	
 	public void start()
 	{
+		out.println("Hello,Welcome to my command line interface!\nPlease Enter command:");
+		out.flush();
 		new Thread(new Runnable() {
 			public void run() {
 				String line;
 				Command command=null;
+				
 				try 
 				{
 					//out.println("Please Enter command:");
@@ -64,6 +69,8 @@ public class CLI extends Thread{
 						}
 						
 					}
+					command=stringToCommand.get("exit");
+					command.doCommand(null);
 					out.println("Bye bye!");
 					out.flush();
 					

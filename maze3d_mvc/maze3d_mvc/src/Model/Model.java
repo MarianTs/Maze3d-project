@@ -1,6 +1,11 @@
 package Model;
 
-
+/**
+ * the model interface perform all the background calculations,than pass them to the controller..
+ * this is the facade of the model
+ * @author Marian
+ *
+ */
 
 public interface Model {
 	/**
@@ -33,7 +38,38 @@ public interface Model {
 	public void handleSaveMaze(String[] paramArray);
 	/**
 	 * handling command:load maze <file name> <name>
+	 * loading maze to the file specified
 	 * @param paramArray array of strings with file name and maze name
 	 */
 	public void handleLoadMaze(String[] paramArray);
+	/**
+	 * handling command:maze size <name>
+	 * measure the size of maze in memory
+	 * @param paramArray array of one string with the name of the file
+	 */
+	public void handleMazeSize(String[] paramArray);
+	/**
+	 * handling command:file size <name>
+	 * measure the size of maze in a file
+	 * @param paramArray array with one string that contain the maze name,than i will find the file of this maze,
+	 * and check the size of the maze in this file
+	 */
+	public void handleFileSize(String[] paramArray);
+	/**
+	 * handle command:solve <name> <algorithm>
+	 * solves the maze specified,with specified algorithm
+	 * @param paramArray array of 2 strings:cell 0-name of the maze,1-the algorithm that meant to find the solution of the maze
+	 */
+	public void handleSolve(String[] paramArray);
+	/**
+	 * handle command:display solution <name>
+	 * display an existing solution
+	 * @param paramarray array of one string with the name of the maze
+	 */
+	public void handleDisplaySolution(String[] paramarray);
+	/**
+	 * closing the running threads
+	 * @param emptyArr there is nothing there
+	 */
+	public void handleExitCommand(String[] emptyArr);
 }

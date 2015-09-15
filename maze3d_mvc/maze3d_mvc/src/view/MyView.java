@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import algorithms.mazeGenerators.Maze3d;
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+import algorithms.search.State;
 import controller.Command;
 import controller.Controller;
 
@@ -18,8 +22,9 @@ public class MyView extends CommonView
 	public MyView(Controller c) 
 	{
 		super(c);
-		stringToCommand=c.getStringToCommand();
-		cli=new CLI(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out),stringToCommand);
+		
+		cli=new CLI(new BufferedReader(new InputStreamReader(System.in)),new PrintWriter(System.out));
+		
 	}
 
 	@Override
@@ -27,6 +32,16 @@ public class MyView extends CommonView
 		cli.start();
 		
 	}
+	
+	
+	
+
+	public void setStringToCommand(HashMap<String, Command> stringToCommand) 
+	{
+		this.stringToCommand = stringToCommand;
+		cli.setStringToCommand(stringToCommand);
+	}
+
 	public void showDirPath(String[] dirArray)
 	{
 		System.out.println("The files and directories in this path are:");
@@ -110,6 +125,40 @@ public class MyView extends CommonView
 		System.out.println(str);
 	}
 	
+	public void showMazeSize(int size)
+	{
+		System.out.println("The size of the maze is "+size);
+	}
+	
+	public void showFileSize(long length)
+	{
+		System.out.println("The size of the maze in file is: "+length);
+	}
+	
+	public void showSolve(String message)
+	{
+		System.out.println(message);
+	}
+	
+	public void showDisplaySolution(Solution<Position> sol)
+	{
+		ArrayList<State<Position>> al=sol.getAL();
+		String s="";
+		for(int i=0;i<al.size();i++)
+		{
+			if(i==al.size()-1)
+			{
+				s=s+al.get(i).getState()+"\n ";
+			}
+			else
+			{
+				s=s+al.get(i).getState()+", ";
+			}
+			
+		}
+		System.out.println(s);
+	}
+	
 	public void showHelp()
 	{
 		System.out.println("Help Center:");
@@ -121,7 +170,7 @@ public class MyView extends CommonView
 		System.out.println("load maze <file name> <name>                         -load maze from file specified");
 		System.out.println("maze size <name>                                     -display the size of maze in ram");
 		System.out.println("file size <name>                                     -display the size of maze in file");
-		System.out.println("solve <name> <algorithm>                             -solve maze with specified algorithm:BFS/Astar ManhattenDistance/Astar air distance");
+		System.out.println("solve <name> <algorithm>                             -solve maze with specified algorithm:bfs/Astar manhatten distance/astar air distance");
 		System.out.println("display solution <name>                              -solve the maze and show the solution");
 		System.out.println("exit                                                 -exit the program");
 		

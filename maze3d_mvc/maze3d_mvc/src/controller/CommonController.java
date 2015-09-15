@@ -19,6 +19,18 @@ public abstract class CommonController implements Controller
 		
 		stringToCommand=new HashMap<String, Command>();
 		initCommands();
+		
+		
+		stringToCommand.put("exit", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				
+				m.handleExitCommand(args);
+			}
+		});
+		
+		
 	}
 
 	public Model getM() {
@@ -35,20 +47,8 @@ public abstract class CommonController implements Controller
 
 	public void setV(View v) {
 		this.v = v;
+		v.setStringToCommand(stringToCommand);
 	}
 	protected abstract void initCommands();
-
-	public HashMap<String, Command> getStringToCommand() {
-		return stringToCommand;
-	}
-
-	public void setStringToCommand(HashMap<String, Command> stringToCommand) {
-		this.stringToCommand = stringToCommand;
-	}
-	
-	
-	
-	
-	
 
 }

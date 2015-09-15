@@ -2,6 +2,10 @@ package controller;
 
 
 
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+
+
 public class MyController extends CommonController 
 {
 
@@ -80,6 +84,44 @@ public class MyController extends CommonController
 			}
 			
 		});
+		
+		stringToCommand.put("maze size", new Command(){
+
+			@Override
+			public void doCommand(String[] args) {
+				m.handleMazeSize(args);
+				
+			}
+		
+		});
+		stringToCommand.put("file size", new Command(){
+
+			@Override
+			public void doCommand(String[] args) {
+				m.handleFileSize(args);
+				
+			}
+			
+		});
+		stringToCommand.put("solve", new Command(){
+
+			@Override
+			public void doCommand(String[] args) {
+				m.handleSolve(args);
+				
+			}
+			
+		});
+		stringToCommand.put("display solution", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleDisplaySolution(args);
+				
+			}
+		});
+		
+		
 	}
 	public void passDirPath(String[] dirArray)
 	{
@@ -112,4 +154,23 @@ public class MyController extends CommonController
 	{
 		v.showLoadMaze(str);
 	}
+	public void passMazeSize(int size)
+	{
+		v.showMazeSize(size);
+	}
+	public void passFileSize(long length)
+	{
+		v.showFileSize(length);
+	}
+	public void passSolve(String message)
+	{
+		v.showSolve(message);
+		
+	}
+	public void passDisplaySolution(Solution<Position> sol )
+	{
+		v.showDisplaySolution(sol);
+	}
+
+	
 }
