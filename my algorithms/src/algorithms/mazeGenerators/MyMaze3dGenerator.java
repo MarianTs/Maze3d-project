@@ -16,6 +16,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 	@Override
 	public Maze3d generate(int size_x, int size_y, int size_z) 
 	{
+		
 		//I used Prim's algorithm
 		Maze3d myMaze=new Maze3d(size_x, size_y, size_z);
 		ArrayList<Position> AL=new ArrayList<Position>();//array of walls
@@ -31,9 +32,9 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 		
 		
 		//I am starting with a random cell,this cell is for sure not in the shell
-		i=rand.nextInt(size_x-1)+1;
-		j=rand.nextInt(size_y-1)+1;
-		n=rand.nextInt(size_z-1)+1;
+		i=rand.nextInt(size_x-2)+1;
+		j=rand.nextInt(size_y-2)+1;
+		n=rand.nextInt(size_z-2)+1;
 		
 		myMaze.setValueInPlace(new Position(i,j,n), 0);//put in this cell zero
 		this.fillArrayOfWalls(new Position(i,j,n), myMaze, AL);//placing all the walls around the cell into array of walls
@@ -58,7 +59,13 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 		
 		//till now we dont have any exits	
 		entrance=findExits(myMaze);
-		exit=findExits(myMaze);
+
+		do
+		{
+			exit=findExits(myMaze);
+		}while(entrance==exit);
+		
+		
 		myMaze.setStartPosition(entrance);
 		myMaze.setGoalPosition(exit);
 		
