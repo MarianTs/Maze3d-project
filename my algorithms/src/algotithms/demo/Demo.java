@@ -20,7 +20,7 @@ public class Demo
 	public void run()
 	{
 		Maze3dGenerator m3dg=new MyMaze3dGenerator();
-		Maze3d maze=m3dg.generate(6, 10, 10);
+		Maze3d maze=m3dg.generate(5, 10, 10);
 		
 		System.out.println("My maze 3D: "+maze+"\nEntrance: "+maze.getStartPosition()+",Exit: "+maze.getGoalPosition()+"\n");
 		

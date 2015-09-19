@@ -60,7 +60,14 @@ public class MyCompressorOutputStream extends OutputStream
 		
 		if(num==this.previousByte)//if we read the same byte,count it
 		{
+			
 			count++;
+			if(count==256)
+			{
+				out.write(previousByte);
+				out.write(255);
+				count=1;
+			}
 		}
 		else//new byte,lets write the previus ones
 		{
@@ -82,6 +89,7 @@ public class MyCompressorOutputStream extends OutputStream
 		super.write(byteArr);//first calling super's method
 		if(count>0)//writing the last byte
 		{
+			
 			out.write((byte)previousByte);
 			out.write((byte)count);
 		}
