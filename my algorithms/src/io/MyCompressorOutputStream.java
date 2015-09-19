@@ -62,6 +62,7 @@ public class MyCompressorOutputStream extends OutputStream
 		{
 			
 			count++;
+			//if there are more than 255 bytes from the same type,write the byte than 255 and than starting count again
 			if(count==256)
 			{
 				out.write(previousByte);
