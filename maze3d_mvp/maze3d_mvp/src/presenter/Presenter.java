@@ -185,6 +185,14 @@ public class Presenter implements Observer {
 				
 			}
 		});
+		viewCommands.put("solve", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleSolveMaze(args);
+				
+			}
+		});
 		
 		
 		//--------------------------------------

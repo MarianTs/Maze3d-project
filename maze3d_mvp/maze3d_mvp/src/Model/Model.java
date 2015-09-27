@@ -15,6 +15,7 @@ public interface Model
 	public void handleLoadMaze(String[] paramArray);
 	public void handleMazeSize(String[] paramArray);
 	public void handleFileSize(String[] paramArray);
+	public void handleSolveMaze(String[] paramArray);
 	
 	
 	

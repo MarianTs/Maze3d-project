@@ -678,6 +678,10 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
+	public void handleSolveMaze(String[] paramArray)
+	{
+		
+	}
 	
 	
 	public String getLoadMazeCode()
