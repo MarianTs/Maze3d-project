@@ -37,14 +37,16 @@ public class CLI extends Thread{
 	{
 		out.println("Hello,Welcome to my command line interface!\nPlease Enter command:");
 		out.flush();
-		new Thread(new Runnable() {
-			public void run() {
+		new Thread(new Runnable() 
+		{
+			public void run() 
+			{
 				String line;
 				Command command=null;
 				
 				try 
 				{
-					//out.println("Please Enter command:");
+					
 					while((line=in.readLine()).intern()!="exit")
 					{
 
@@ -68,7 +70,7 @@ public class CLI extends Thread{
 							
 							paramArray.add(line.substring(line.lastIndexOf(" ")+1));
 							line=line.substring(0, line.lastIndexOf(" "));	//cutting till " " (not including)
-							
+							//generte 3d maze mdmdmh bla
 						}
 						
 						

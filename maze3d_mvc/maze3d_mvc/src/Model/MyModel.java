@@ -52,6 +52,7 @@ public class MyModel extends CommonModel {
 		super(c);
 		mazeCollection = new HashMap<String, Maze3d>();
 		threadPool = Executors.newFixedThreadPool(10);
+		
 		mazeToFile=new HashMap<String,String>();
 		mazeSolutions=new HashMap<Maze3d, Solution<Position>>();
 	}
@@ -152,7 +153,8 @@ public class MyModel extends CommonModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleDisplayCrossSectionBy(String[] paramArray) {
+	public void handleDisplayCrossSectionBy(String[] paramArray) 
+	{
 		if ((paramArray.length != 4) || (paramArray[2].intern() != "for")) 
 		{
 			c.passError("Invalid amount of parameters");
@@ -224,7 +226,8 @@ public class MyModel extends CommonModel {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void handleSaveMaze(String[] paramArray) {
+	public void handleSaveMaze(String[] paramArray) 
+	{
 
 		if (paramArray.length != 2) 
 		{
@@ -245,10 +248,10 @@ public class MyModel extends CommonModel {
 		Maze3d maze = mazeCollection.get(paramArray[0].toString());
 
 		int size = maze.toByteArray().length;
+		
 		try 
 		{
 			MyCompressorOutputStream out = new MyCompressorOutputStream(new FileOutputStream(paramArray[1].toString()));
-		
 			out.write(ByteBuffer.allocate(4).putInt(size).array());// first writing the size of the maze
 			out.write(maze.toByteArray());
 			c.passSaveMaze(paramArray[0].toString() + " has been saved");
@@ -263,6 +266,7 @@ public class MyModel extends CommonModel {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	/**

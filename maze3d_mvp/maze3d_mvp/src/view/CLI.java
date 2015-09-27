@@ -3,139 +3,188 @@ package view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 
-import controller.Command;
+import algorithms.mazeGenerators.Maze3d;
 
-/**
- * defines the starting point of command line interface
- * @author Marian
- *
- */
-public class CLI extends Thread{
+
+
+public class CLI extends CommonView 
+{
 	BufferedReader in;
 	PrintWriter out;
-	HashMap<String,Command> stringToCommand;
-	/**
-	 * constructor using fields
-	 * @param in the input source
-	 * @param out the output source
-	 */
-	CLI(BufferedReader in, PrintWriter out) {
-		super();
-		this.in = in;
-		this.out = out;
+	boolean canBeClosed;
+	String line;
+	
+	
+	public CLI(BufferedReader in, PrintWriter out) 
+	{
+		this.in=in;
+		this.out=out;
+		this.canBeClosed=false;
+		this.line=new String();
+	}
+	@Override
+	public void start() 
+	{
+		out.println("Hello,Welcome to my command line interface!\nPlease Enter command:\nfor help press,help");
+		out.flush();
+		new Thread(new Runnable() 
+		{
+			public void run() 
+			{
+				
+				while(canBeClosed==false)
+				{
+					try 
+					{
+						
+						line=in.readLine();
+						if(!line.isEmpty())
+						{
+							setChanged();
+							notifyObservers();
+						}
+					} 
+					
+					catch (IOException e) {
+						
+						e.printStackTrace();
+					}
+				}
+
+			}
+		}).start();
 		
 	}
-	
-	/**
-	 * starts the command line interface
-	 */
-	public void start()
+	public String getUserCommand()
 	{
-		out.println("Hello,Welcome to my command line interface!\nPlease Enter command:");
+		return line;
+	}
+	
+	public void showError(String error)
+	{
+		out.println(error);
 		out.flush();
-		new Thread(new Runnable() {
-			public void run() {
-				String line;
-				Command command=null;
-				
-				try 
+	}
+	public void showDirPath(String[] list)
+	{
+		out.println("The files and directories in this folder are:");
+		out.flush();
+		for(String s:list)
+		{
+			out.println(s);
+			out.flush();
+		}
+	}
+	public void showGenerate3dMaze(String message)
+	{
+		out.println(message);
+		out.flush();
+	}
+	public void showDisplayName(byte[] byteArr)
+	{
+		try {
+			Maze3d maze3d=new Maze3d(byteArr);
+			int size_x=maze3d.getSize_x();
+			int size_y=maze3d.getSize_y();
+			int size_z=maze3d.getSize_z();
+			int[][][] maze=maze3d.getMaze();
+			
+			
+			StringBuilder aString=new StringBuilder();
+			
+			for(int i=0;i<size_x;i++)
+			{
+				aString.append("floor "+i+":\n\n");
+				for(int j=0;j<size_y;j++)
 				{
-					//out.println("Please Enter command:");
-					while((line=in.readLine()).intern()!="exit")
-					{
 
-						ArrayList<String> paramArray=new ArrayList<String>();
-						//paramArray.add(line.substring(line.lastIndexOf(" ")+1));
-						
-						while(!(line.isEmpty()))
+					for(int n=0;n<size_z;n++)
+					{
+						if(n==size_z-1)
 						{
-							
-							if((command=stringToCommand.get(line)) != null)
-							{
-								
-								Collections.reverse(paramArray);
-								command.doCommand(paramArray.toArray(new String[paramArray.size()]));
-								break;
-							}
-							if(line.indexOf(" ")==-1)//we ended the line
-							{
-								break;
-							}
-							
-							paramArray.add(line.substring(line.lastIndexOf(" ")+1));
-							line=line.substring(0, line.lastIndexOf(" "));	//cutting till " " (not including)
-							
+							aString.append(maze[i][j][n]);
 						}
-						
-						
-						if(command==null)
+						else
 						{
-							out.println("Command not found!");
-							out.flush();
+							aString.append(maze[i][j][n]+" ");
 						}
 						
 					}
-					command=stringToCommand.get("exit");
-					command.doCommand(null);
-					out.println("Bye bye!");
-					out.flush();
-					
-				} 
-				catch (IOException e) {
-
-					e.printStackTrace();
+					aString.append("\n");
 				}
+				aString.append("\n\n");
 			}
-		}).start();
-
-	}
-	/**
-	 * getter of input stream source
-	 * @return input stream source
-	 */
-	public BufferedReader getIn() {
-		return in;
-	}
-	/**
-	 * sets the input stream source
-	 * @param in input stream source
-	 */
-	public void setIn(BufferedReader in) {
-		this.in = in;
+		
+			out.println(aString);
+			out.flush();
+			out.println("The start position: ("+maze3d.getStartPosition().getX()+","+maze3d.getStartPosition().getY()+","+maze3d.getStartPosition().getZ()+")");
+			out.println("The goal position:  ("+maze3d.getGoalPosition().getX()+","+maze3d.getGoalPosition().getY()+","+maze3d.getGoalPosition().getZ()+")");
+			out.flush();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
-	/**
-	 * getter of the output stream source
-	 * @return output stream source
-	 */
-	public PrintWriter getOut() {
-		return out;
-	}
-	/**
-	 * sets the output stream source
-	 * @param out output stream source
-	 */
-	public void setOut(PrintWriter out) {
-		this.out = out;
-	}
-	/**
-	 * gets the hash map with the commands
-	 * @return hash map with key-name of command,value-the command
-	 */
-	public HashMap<String, Command> getStringToCommand() {
-		return stringToCommand;
-	}
-	/**
-	 * sets the hash map with the commands
-	 * @param stringToCommand hash map with key-name of command,value-the command
-	 */
-	public void setStringToCommand(HashMap<String, Command> stringToCommand) {
-		this.stringToCommand = stringToCommand;
+	public void showDisplayCrossSectionBy(int[][] crossSection)
+	{
+		for(int[] a:crossSection)
+		{
+			for(int b:a)
+			{
+				out.print(b+" ");
+			}
+			out.println();
+		}
+		out.flush();
 	}
 	
+	public void showSaveMaze(String message)
+	{
+		out.println(message);
+		out.flush();
+	}
+	public void showLoadMaze(String message)
+	{
+		out.println(message);
+		out.flush();
+	}
 	
+	public void showMazeSize(int size)
+	{
+		out.println("The size of the maze is: "+ size);
+		out.flush();
+	}
+	public void showFileSize(long size)
+	{
+		out.println("The size of the maze inside the file is: "+ size);
+		out.flush();
+	}
+	public void showExit()
+	{
+		canBeClosed=true;
+		out.println("Bye bye!");
+		out.flush();
+	}
+	public void showHelp()
+	{
+		
+		out.println("Help Center:");
+		out.println("dir <path>                                           -display the files and directories in this specific path.");
+		out.println("generate 3d maze <name> <x> <y> <z> <algorithm>      -generating maze with the specified name,with xyz dimensions with algorith:simple/prim");
+		out.println("display <name>                                       -display the specified maze");
+		out.println("display cross section by {x,y,z} <index> for <name>  -diplaying cross section(x,y or z,chose one) in the index specified for maze with this name");
+		out.println("save maze <name> <file name>                         -save maze in file name specified");
+		out.println("load maze <file name> <name>                         -load maze from file specified");
+		out.println("maze size <name>                                     -display the size of maze in ram");
+		out.println("file size <name>                                     -display the size of maze in file");
+		out.println("solve <name> <algorithm>                             -solve maze with specified algorithm:bfs/Astar manhatten distance/astar air distance");
+		out.println("display solution <name>                              -solve the maze and show the solution");
+		out.println("exit                                                 -exit the program");
+		out.println();
+		out.println("<> -You have to write the requested string inside,{} -choose one of the fallwing and write inside the brackets");
+		out.flush();
+	}
 }
