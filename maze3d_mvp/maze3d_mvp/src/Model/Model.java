@@ -1,5 +1,8 @@
 package Model;
 
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+
 public interface Model 
 {
 	public void handleDirPath(String[] path);
@@ -16,6 +19,7 @@ public interface Model
 	public void handleMazeSize(String[] paramArray);
 	public void handleFileSize(String[] paramArray);
 	public void handleSolveMaze(String[] paramArray);
+	public void handleDisplaySolution(String[] paramArray);
 	
 	
 	
@@ -26,5 +30,7 @@ public interface Model
 	public String getLoadMazeCode();
 	public int getMazeSize();
 	public long getFileSize() ;
+	public String getSolveMazeCode() ;
+	public Solution<Position> getSpecificSolution(String name);
 	//public void handleCommands(String[] args);
 }

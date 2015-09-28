@@ -1,5 +1,8 @@
 package view;
 
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+
 public interface View {
 	public void start();
 	
@@ -22,6 +25,9 @@ public interface View {
 	public void showMazeSize(int size);
 	
 	public void showFileSize(long size);
+	
+	public void showSolveMaze(String message);
+	public void showDisplaySolution(Solution<Position> solution);
 	
 	public void showExit();
 	

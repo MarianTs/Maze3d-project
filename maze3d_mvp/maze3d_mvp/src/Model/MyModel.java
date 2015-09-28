@@ -8,19 +8,32 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
+import algorithms.mazeGenerators.Position;
 import algorithms.mazeGenerators.SimpleMaze3dGenerator;
+import algorithms.search.AStar;
+import algorithms.search.BFS;
+import algorithms.search.MazeAirDistance;
+import algorithms.search.MazeManhattenDistance;
+import algorithms.search.Searcher;
+import algorithms.search.Solution;
+import algotithms.demo.Maze3dSearchable;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 
@@ -29,6 +42,8 @@ public class MyModel extends CommonModel
 	ExecutorService threadPool;
 	HashMap<String, Maze3d> mazeCollection;
 	HashMap<String, String> mazeToFile;
+	HashMap<Maze3d, Solution<Position>> mazeSolutions;
+	
 	
 	String errorCode;
 	String[] dirList;
@@ -38,6 +53,8 @@ public class MyModel extends CommonModel
 	String loadMazeCode;
 	int mazeSize;
 	long fileSize;
+	String solveMazeCode;
+
 	
 
 	
@@ -47,6 +64,44 @@ public class MyModel extends CommonModel
 		threadPool = Executors.newFixedThreadPool(10);
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeToFile=new HashMap<String,String>();
+		
+		mazeSolutions=new HashMap<Maze3d, Solution<Position>>();
+		
+			
+		//loading hash map with old solutions
+		try 
+		{
+
+			File f=new File("maze solutions.zip");
+			if(f.exists())
+			{
+				//loading it compressed
+				ObjectInputStream objectIn = new ObjectInputStream(new GZIPInputStream(new FileInputStream("maze solutions.zip")));
+				//reading entire object into our maze solution collection
+				mazeSolutions=(HashMap<Maze3d, Solution<Position>>)objectIn.readObject();
+				objectIn.close();
+				
+
+				/*for (Map.Entry<Maze3d, Solution<Position>> entry : mazeSolutions.entrySet()) 
+				{
+				    //Maze3d key =entry.getKey();
+				    //Solution<Position> value =(Solution<Position>)entry.getValue();
+				    System.out.println("key: \n"+entry.getKey()+"\nvalue: \n"+entry.getValue());
+
+				}*/
+			}
+
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	public void handleDirPath(String[] path)
@@ -168,7 +223,8 @@ public class MyModel extends CommonModel
 				mazeCollection.put(mazeParam[0].toString(),maze);
 				// generate maze with specified algorithm ,with specified sizes.
 				
-				return "maze " + mazeParam[0].toString() + " is ready";
+				generate3dmazeCode="maze " + mazeParam[0].toString() + " is ready";
+				return "generate 3d maze";
 			}
 		});
 		
@@ -178,10 +234,10 @@ public class MyModel extends CommonModel
 			public void run() {
 				try 
 				{
-					generate3dmazeCode=future.get();
-					if(generate3dmazeCode.intern()=="error")
+					String message=future.get();
+					if(message.intern()=="error")
 					{
-						generate3dmazeCode=null;
+
 						setChanged();
 						String[] s=new String[1];
 						s[0]="error";
@@ -190,6 +246,7 @@ public class MyModel extends CommonModel
 					}
 					else
 					{
+						
 						setChanged();
 						String[] s=new String[1];
 						s[0]="generate 3d maze";
@@ -411,10 +468,37 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
+		
+		
+		//writing the maze solution into file,in order to reopen it in next time the program will open
+		try 
+		{
+			ObjectOutputStream objectOut=new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("maze solutions.zip")));
+			objectOut.writeObject(mazeSolutions);
+			objectOut.flush();
+			objectOut.close();
+		} 
+		catch (FileNotFoundException e1)
+		{
+
+			e1.printStackTrace();
+		} 
+		catch (IOException e1) 
+		{
+
+			e1.printStackTrace();
+		}
+		
+		
+		
+		
+		
 		threadPool.shutdown();
-		try {
+		try 
+		{
 			while(!threadPool.awaitTermination(10, TimeUnit.SECONDS));
-		} catch (InterruptedException e) 
+		} 
+		catch (InterruptedException e) 
 		{
 			e.printStackTrace();
 		}
@@ -535,7 +619,7 @@ public class MyModel extends CommonModel
 				return;
 			}
 		}
-		mazeToFile.put(paramArray[1], paramArray[0]);
+
 			
 		try 
 		{	
@@ -560,9 +644,11 @@ public class MyModel extends CommonModel
 
 			byte[] byteArr = new byte[dis.readInt()];// construct a array of byte,in the size readen from file.
 			in.read(byteArr);
-			mazeCollection.put(paramArray[1], new Maze3d(byteArr));
-
 			in.close();
+			mazeCollection.put(paramArray[1], new Maze3d(byteArr));
+			//if we succeded in loading maze,put it to the hash map which maps between file names and mazes
+			mazeToFile.put(paramArray[1], paramArray[0]);
+			
 			loadMazeCode=paramArray[1] + " has been loaded from file: " + paramArray[0];
 			String[] s=new String[1];
 			s[0]="load maze";
@@ -680,10 +766,225 @@ public class MyModel extends CommonModel
 	}
 	public void handleSolveMaze(String[] paramArray)
 	{
+		if(paramArray==null)
+		{
+			errorCode="Invalid parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		if(paramArray.length!=4)
+		{
+			if(paramArray.length!=2)
+			{
+				errorCode="Invalid amount of parameters";
+				String[] s=new String[1];
+				s[0]="error";
+				setChanged();
+				notifyObservers(s);
+				return;
+			}
+		}
+		//check if i generated maze with this name
+		if(!(mazeCollection.containsKey(paramArray[0])))
+		{
+			errorCode="Maze doesn't exists";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		//if i have solution for this maze,so don't enter into the thread,give this solution immediately
+		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
+		{
+			solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+			setChanged();
+			String[] s=new String[1];
+			s[0]="solve";
+			notifyObservers(s);
+			return;
+		}
 		
+		//thread which generates solution for the maze
+		Future<String> future=threadPool.submit(new Callable<String>()
+		{
+
+			@Override
+			public String call() throws Exception
+			{
+				StringBuilder algo=new StringBuilder();
+				for(int i=1;i<paramArray.length;i++)
+				{
+					if(i==paramArray.length-1)
+					{
+						algo.append(paramArray[i]);
+					}
+					else
+					{
+						algo.append(paramArray[i]+" ");
+					}
+				}
+
+				
+				if(algo.toString().equals("bfs"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
+					
+					Searcher<Position> bfs=new BFS<Position>();
+					Solution<Position> sol=bfs.search(ms);
+					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+					
+					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+					return "solve";
+				}
+				else if(algo.toString().equals("astar air distance"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
+					Searcher<Position> AstarAir=new AStar<Position>(new MazeAirDistance());
+					
+					Solution<Position> sol=AstarAir.search(ms);
+					
+					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+					
+					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+					return "solve";
+				}
+				else if(algo.toString().equals("astar manhatten distance"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
+					Searcher<Position> AStarMan=new AStar<Position>(new MazeManhattenDistance());
+					
+					Solution<Position> sol=AStarMan.search(ms);
+					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+					
+					
+					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+					return "solve";
+				}
+				else
+				{
+					errorCode="Invalid algorithm";
+					return "error";
+				}
+				
+			
+				
+			}
+		});
+		
+		threadPool.execute(new Runnable() 
+		{
+			
+			@Override
+			public void run() 
+			{
+				try 
+				{
+					String message=future.get();
+					if(message.intern()=="error")
+					{
+
+						//we already put the error in errorCode
+						setChanged();
+						String[] s=new String[1];
+						s[0]="error";
+						notifyObservers(s);
+						return;
+					}
+					else
+					{
+						setChanged();
+						String[] s=new String[1];
+						s[0]="solve";
+						notifyObservers(s);
+						return;
+					}
+					
+				}
+				
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				} 
+				catch (ExecutionException e) 
+				{
+					e.printStackTrace();
+				}
+				
+			}
+		});
+		
+		
+	}
+	public void handleDisplaySolution(String[] paramArray)
+	{
+		if(paramArray==null)
+		{
+			errorCode="Invalid parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		if(paramArray.length!=1)
+		{
+			errorCode="Invalid amount of parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		
+		if(!(mazeCollection.containsKey(paramArray[0])))
+		{
+			errorCode="Maze with this name doesn't exists";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		
+		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
+		{
+			
+			
+			String[] s=new String[2];
+			s[0]="display solution";
+			s[1]=paramArray[0].toString();
+
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		else
+		{
+			errorCode="Solution doesn't exists(use solve command first)";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
 	}
 	
 	
+	
+	
+	public Solution<Position> getSpecificSolution(String name)
+	{
+		return mazeSolutions.get(mazeCollection.get(name));
+	}
+
+	public String getSolveMazeCode() 
+	{
+		return solveMazeCode;
+	}
 	public String getLoadMazeCode()
 	{
 		return loadMazeCode;

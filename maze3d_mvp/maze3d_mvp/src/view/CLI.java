@@ -3,8 +3,12 @@ package view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import algorithms.mazeGenerators.Maze3d;
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+import algorithms.search.State;
 
 
 
@@ -162,6 +166,36 @@ public class CLI extends CommonView
 		out.println("The size of the maze inside the file is: "+ size);
 		out.flush();
 	}
+	
+	public void showSolveMaze(String message)
+	{
+		out.println(message);
+		out.flush();
+	}
+	
+	public void showDisplaySolution(Solution<Position> solution)
+	{
+		ArrayList<State<Position>> al=solution.getAL();
+		String s="";
+		for(int i=0;i<al.size();i++)
+		{
+			if(i==al.size()-1)
+			{
+				s=s+al.get(i).getState()+"\n ";
+			}
+			else
+			{
+				s=s+al.get(i).getState()+", ";
+			}
+			
+		}
+		out.println(s);
+		out.flush();
+	}
+	
+	
+	
+	
 	public void showExit()
 	{
 		canBeClosed=true;

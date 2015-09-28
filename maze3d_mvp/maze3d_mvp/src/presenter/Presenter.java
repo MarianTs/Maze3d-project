@@ -8,6 +8,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import Model.Model;
+import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
 import view.View;
 
 public class Presenter implements Observer {
@@ -108,6 +110,14 @@ public class Presenter implements Observer {
 				
 			}
 			
+		});
+		viewCommands.put("display solution", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleDisplaySolution(args);
+				
+			}
 		});
 		viewCommands.put("display cross section by", new Command() {
 			
@@ -285,6 +295,24 @@ public class Presenter implements Observer {
 			{
 				long x=m.getFileSize();
 				ui.showFileSize(x);
+			}
+		});
+		modelCommands.put("solve", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) 
+			{
+				String s=m.getSolveMazeCode();//taking the message out
+				ui.showSolveMaze(s);
+			}
+		});
+		modelCommands.put("display solution", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) 
+			{
+				Solution<Position> sol=m.getSpecificSolution(args[0].toString());
+				ui.showDisplaySolution(sol);
 			}
 		});
 	}
