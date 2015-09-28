@@ -1,5 +1,7 @@
 package algorithms.search;
 
+import java.io.Serializable;
+
 /**
  * defines the state in the searching problem
  * @author Marian
@@ -7,11 +9,19 @@ package algorithms.search;
  * @param <T> The type of the internal representation of state
  */
 
-public class State<T>
+public class State<T> implements Serializable
 {
+	
 	private T state;
 	private double cost;
 	private State<T> cameFrom;
+	
+	/**
+	 * serial number for the serialization
+	 */
+	private static final long serialVersionUID = 2880929958446401029L;
+	
+	
 	/**
 	 * constructor that insert only state without cost and camefrom
 	 * @param s state

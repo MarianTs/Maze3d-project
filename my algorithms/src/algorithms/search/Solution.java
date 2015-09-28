@@ -1,5 +1,6 @@
 package algorithms.search;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * Defines the solution of the searching problem
@@ -8,7 +9,16 @@ import java.util.ArrayList;
  * @param <T> The type of the internal representation of state
  */
 
-public class Solution<T> {
+public class Solution<T> implements Serializable
+{
+	
+	
+	
+	/**
+	 * serial number for the serialization
+	 */
+	private static final long serialVersionUID = -3544215782730571392L;
+	
 	
 	ArrayList<State<T>> AL;
 	

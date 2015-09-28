@@ -1,14 +1,26 @@
 package algorithms.mazeGenerators;
 
+import java.io.Serializable;
+
 /**
  * holds the position coordinates
  * @author Marian
  */
-public class Position 
+public class Position implements Serializable
 {
+	
 	private int x;
 	private int y;
 	private int z;
+	
+	
+	
+	/**
+	 * serial number for the serialization
+	 */
+	private static final long serialVersionUID = -5549191743832392057L;
+	
+	
 	
 	/**
 	 * construct Position out of x y z coordinates
