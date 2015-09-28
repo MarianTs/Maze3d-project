@@ -23,6 +23,7 @@ public class Presenter implements Observer {
 	
 	public Presenter(Model m,View ui) 
 	{
+		
 		this.m=m;
 		this.ui=ui;
 		viewCommands=new LinkedHashMap<String,Command>();

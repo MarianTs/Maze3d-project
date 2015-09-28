@@ -1,5 +1,6 @@
 package Model;
 
+import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -12,7 +13,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +36,7 @@ import algorithms.search.Solution;
 import algotithms.demo.Maze3dSearchable;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
+import presenter.Properties;
 
 public class MyModel extends CommonModel 
 {
@@ -61,7 +62,18 @@ public class MyModel extends CommonModel
 
 	public MyModel() 
 	{
-		threadPool = Executors.newFixedThreadPool(10);
+		try {
+			XMLDecoder xmlD=new XMLDecoder(new FileInputStream("properties.xml"));
+			Properties p=(Properties)xmlD.readObject();
+			threadPool = Executors.newFixedThreadPool(p.getNumberOfThreads());
+			xmlD.close();
+		} catch (FileNotFoundException e1) {
+
+			e1.printStackTrace();
+		}
+		
+		
+		
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeToFile=new HashMap<String,String>();
 		
