@@ -2,11 +2,13 @@ package view;
 
 
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 
@@ -14,7 +16,7 @@ public class GUI extends CommonView
 {
 	String message;
 	HashMap<String,Listener> listenerCollection;
-	BasicWindow basicWindow;
+	MazeWindow basicWindow;
 	GenericWindow genericWindow;
 	
 	public GUI() 
@@ -64,26 +66,37 @@ public class GUI extends CommonView
 			
 			@Override
 			public void handleEvent(Event arg0) {
-				genericWindow=new GenericWindow(50,100,listenerCollection,new MazeProperties());
+				genericWindow=new GenericWindow(200,200,listenerCollection,new MazeProperties());
 				genericWindow.run();
 				MazeProperties mp=(MazeProperties)genericWindow.getObj();
-				int x=mp.getDepth();
+				int x=mp.getHeight();
 				int y=mp.getWidth();
 				int z=mp.getDepth();
 				message="generate 3d maze m "+x+" "+y+" "+z+" prim";
 				setChanged();
 				notifyObservers();
-				
+				Maze3d maze=basicWindow.getMaze();
+				if(maze!=null)
+				{
+					basicWindow.getMazeCanvas().setMaze(maze);
+					basicWindow.getMazeCanvas().paintMaze();
+					basicWindow.getMazeCanvas().activatePainting();
+					System.out.println(maze);
+				}
 				
 			}
 		});
-		listenerCollection.put("ok", new Listener() {
+		listenerCollection.put("paint", new Listener() {
 			
 			@Override
 			public void handleEvent(Event arg0) 
 			{
 				
-				
+				Maze3d maze=basicWindow.getMaze();
+				if(maze!=null)
+				{
+					
+				}
 			}
 		});
 		
@@ -110,13 +123,25 @@ public class GUI extends CommonView
 	@Override
 	public void showGenerate3dMaze(String message) 
 	{
-		
-
+		//!
+		this.message="display m";
+		setChanged();
+		notifyObservers();
 	}
 
 	@Override
 	public void showDisplayName(byte[] byteArr) {
-		// TODO Auto-generated method stub
+		try 
+		{
+			Maze3d maze=new Maze3d(byteArr);
+			basicWindow.setMaze(maze);
+		}
+		catch (IOException e) 
+		{
+
+			e.printStackTrace();
+		}
+		
 
 	}
 

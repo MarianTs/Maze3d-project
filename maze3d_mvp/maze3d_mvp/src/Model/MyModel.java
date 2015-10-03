@@ -226,11 +226,9 @@ public class MyModel extends CommonModel
 					return "error";
 				}
 
-				if (mazeCollection.containsKey(mazeParam[0].toString())) 
-				{
-					errorCode="This name already exists,try another one";
-					return "error";
-				}
+
+				mazeCollection.remove(mazeParam[0].toString());//removes a maze with the same name,if exists
+
 				Maze3d maze=mg.generate(Integer.parseInt(mazeParam[1]),Integer.parseInt(mazeParam[2]), Integer.parseInt(mazeParam[3]));
 				mazeCollection.put(mazeParam[0].toString(),maze);
 				// generate maze with specified algorithm ,with specified sizes.

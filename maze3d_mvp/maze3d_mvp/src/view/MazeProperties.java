@@ -5,21 +5,22 @@ public class MazeProperties
 	int height;//x
 	int width;//z
 	int depth;//y
-	String crossSection;
+	//String crossSection;
 	
 	public MazeProperties() {
 		this.height=5;
 		this.width=10;
 		this.depth=10;
-		this.crossSection="x";
+		//this.crossSection="x";
 	}
 
-	public MazeProperties(int height, int width, int depth, String crossSection) {
+	public MazeProperties(int height, int width, int depth) 
+	{
 		super();
 		this.height = height;
 		this.width = width;
 		this.depth = depth;
-		this.crossSection = crossSection;
+		//this.crossSection = crossSection;
 	}
 
 	public int getHeight() {
@@ -46,13 +47,13 @@ public class MazeProperties
 		this.depth = depth;
 	}
 
-	public String getCrossSection() {
+	/*public String getCrossSection() {
 		return crossSection;
 	}
 
 	public void setCrossSection(String crossSection) {
 		this.crossSection = crossSection;
-	}
+	}*/
 	
 	
 	

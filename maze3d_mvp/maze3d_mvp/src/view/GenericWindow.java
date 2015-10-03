@@ -96,6 +96,7 @@ public class GenericWindow extends BasicWindow
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+				
 				close();
 				
 			}
@@ -107,6 +108,7 @@ public class GenericWindow extends BasicWindow
 			}
 		});
 		//ok.addListener(SWT.Selection, listenerCollection.get("ok"));
+		
 		
 		Button cancel=new Button(shell,SWT.PUSH);
 		cancel.setText("cancel");

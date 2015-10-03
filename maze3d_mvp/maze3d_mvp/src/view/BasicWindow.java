@@ -14,6 +14,7 @@ public abstract class BasicWindow
 		Boolean displayCanBeDisposed;
 		HashMap<String, Listener> listenerCollection;
 		
+		
 	 	public BasicWindow(String title, int width,int height,HashMap<String, Listener> listenerCollection)
 	 	{
 	 		if(Display.getCurrent()==null)
