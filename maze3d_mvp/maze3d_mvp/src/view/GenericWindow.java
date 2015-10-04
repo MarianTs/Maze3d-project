@@ -125,11 +125,7 @@ public class GenericWindow extends BasicWindow
 
 	}
 
-	@Override
-	public boolean DisplayExitMessageBox() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 
 	@Override
 	public void close() 

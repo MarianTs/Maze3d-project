@@ -37,7 +37,13 @@ public abstract class BasicWindow
 	 	
 	 	
 	 	
-	 	abstract void initWidgets();
+	 	public Shell getShell() {
+			return shell;
+		}
+
+
+
+		abstract void initWidgets();
 
 	 	
 		public void run() 
@@ -63,6 +69,6 @@ public abstract class BasicWindow
 			 
 		}
 		
-		public abstract boolean DisplayExitMessageBox();
+
 		public abstract void close();
 }

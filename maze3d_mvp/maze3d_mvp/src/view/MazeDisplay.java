@@ -17,9 +17,7 @@ public class MazeDisplay extends Canvas
 		//final Color black=new Color(null, 150,150,150);
 	}
 
-	public void setMaze(Maze3d maze) {
-		this.maze = maze;
-	}
+	
 	
 
 }

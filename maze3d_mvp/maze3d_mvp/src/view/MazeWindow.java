@@ -2,15 +2,24 @@ package view;
 
 import java.util.HashMap;
 
+import javax.annotation.Generated;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 import algorithms.mazeGenerators.Maze3d;
 
@@ -46,8 +55,8 @@ public class MazeWindow extends BasicWindow
 		start.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		start.addListener(SWT.Selection, listenerCollection.get("start"));
 		
-		mazeCanvas=new Maze2dDisplay(shell, SWT.COLOR_DARK_GRAY);
-		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
+		mazeCanvas=new Maze2dDisplay(shell, SWT.COLOR_DARK_GRAY,new MyGameCharacter());
+		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 5));
 		
 		
 		
@@ -123,12 +132,47 @@ public class MazeWindow extends BasicWindow
 		hint.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		
 		
+		Button up=new Button(shell, SWT.ARROW|SWT.UP);
+		up.setBackground(new Color(null, 169,245,40));
+		up.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
+
+		
+		
+		Button down=new Button(shell, SWT.ARROW|SWT.DOWN);
+		down.setBackground(new Color(null, 34,105,34));
+		down.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
+		
+		
+		
+		mazeCanvas.addPaintListener(new PaintListener() {
+			
+			@Override
+			public void paintControl(PaintEvent arg0) {
+				if(mazeCanvas.canBeMovedUp())
+				{
+					up.setEnabled(true);
+				}
+				else
+				{
+					up.setEnabled(false);
+				}
+				if(mazeCanvas.canBeMovedDown())
+				{
+					down.setEnabled(true);
+				}
+				else
+				{
+					down.setEnabled(false);
+				}
+			}
+		});
+		
 		Button exit=new Button(shell, SWT.PUSH);
 		exit.setText("exit");
 		exit.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 
 		exit.addListener(SWT.Selection,listenerCollection.get("exit"));
-		shell.addListener(SWT.Close, listenerCollection.get("exit"));
+		shell.addListener(SWT.Close,listenerCollection.get("exit"));
 	}
 	
 	public Maze2dDisplay getMazeCanvas() {
@@ -143,25 +187,14 @@ public class MazeWindow extends BasicWindow
 		return maze;
 	}
 	
-	public void setMaze(Maze3d maze) {
+	public void setMaze(Maze3d maze) 
+	{
+		System.out.println("3: "+maze);
 		this.maze = maze;
+		mazeCanvas.setMaze(maze);
 	}
 
-	public boolean DisplayExitMessageBox()
-	{
-		MessageBox messageBox = new MessageBox(shell,  SWT.ICON_QUESTION| SWT.YES | SWT.NO);
-		 messageBox.setMessage("Do you really want to exit?");
-		 messageBox.setText("Exiting Application");
-		 int response = messageBox.open();
-		 if (response == SWT.YES)
-		 {
-			 return true;
-		 }
-		 else
-		 {
-			 return false;
-		 }
-	}
+	
 	public void close()
 	{
 		

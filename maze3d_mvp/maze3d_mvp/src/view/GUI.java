@@ -5,8 +5,10 @@ package view;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
@@ -16,7 +18,7 @@ public class GUI extends CommonView
 {
 	String message;
 	HashMap<String,Listener> listenerCollection;
-	MazeWindow basicWindow;
+	MazeWindow mainWindow;
 	GenericWindow genericWindow;
 	
 	public GUI() 
@@ -24,7 +26,7 @@ public class GUI extends CommonView
 		listenerCollection=new HashMap<String,Listener>();
 		message=new String();
 		initListeners();
-		this.basicWindow=new MazeWindow("bla bla",600,400,listenerCollection);
+		this.mainWindow=new MazeWindow("bla bla",600,400,listenerCollection);
 	}
 	
 	
@@ -32,7 +34,7 @@ public class GUI extends CommonView
 	
 	@Override
 	public void start() {
-		basicWindow.run();
+		mainWindow.run();
 
 	}
 	
@@ -42,15 +44,22 @@ public class GUI extends CommonView
 		{
 			 public void handleEvent(Event event) 
 			 {
-				 Boolean x=basicWindow.DisplayExitMessageBox();
-				 if(x==true)
+				 MessageBox messageBox = new MessageBox(mainWindow.getShell(),  SWT.ICON_QUESTION| SWT.YES | SWT.NO);
+				 messageBox.setMessage("Do you really want to exit?");
+				 messageBox.setText("Exiting Application");
+				 if(messageBox.open()==SWT.YES)
 				 {
+					 mainWindow.close();
 					 message="exit";
 					 setChanged();
 					 notifyObservers();
-					 basicWindow.close();
-					 
+					 event.doit=true;
 				 }
+				 else
+				 {
+					 event.doit=false;
+				 }
+				 
 
 			 }
 		}); 
@@ -72,33 +81,15 @@ public class GUI extends CommonView
 				int x=mp.getHeight();
 				int y=mp.getWidth();
 				int z=mp.getDepth();
+	
 				message="generate 3d maze m "+x+" "+y+" "+z+" prim";
 				setChanged();
 				notifyObservers();
-				Maze3d maze=basicWindow.getMaze();
-				if(maze!=null)
-				{
-					basicWindow.getMazeCanvas().setMaze(maze);
-					basicWindow.getMazeCanvas().paintMaze();
-					basicWindow.getMazeCanvas().activatePainting();
-					System.out.println(maze);
-				}
+				
 				
 			}
 		});
-		listenerCollection.put("paint", new Listener() {
-			
-			@Override
-			public void handleEvent(Event arg0) 
-			{
-				
-				Maze3d maze=basicWindow.getMaze();
-				if(maze!=null)
-				{
-					
-				}
-			}
-		});
+		
 		
 	}
 	
@@ -125,6 +116,7 @@ public class GUI extends CommonView
 	{
 		//!
 		this.message="display m";
+		System.out.println("1  "+message);
 		setChanged();
 		notifyObservers();
 	}
@@ -134,7 +126,8 @@ public class GUI extends CommonView
 		try 
 		{
 			Maze3d maze=new Maze3d(byteArr);
-			basicWindow.setMaze(maze);
+			System.out.println("2 "+maze);
+			mainWindow.setMaze(maze);
 		}
 		catch (IOException e) 
 		{
