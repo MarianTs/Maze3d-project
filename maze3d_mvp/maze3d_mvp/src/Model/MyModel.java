@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
+
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
@@ -40,41 +42,32 @@ import presenter.Properties;
 
 public class MyModel extends CommonModel 
 {
-	ExecutorService threadPool;
-	HashMap<String, Maze3d> mazeCollection;
-	HashMap<String, String> mazeToFile;
-	HashMap<Maze3d, Solution<Position>> mazeSolutions;
-	HashMap<String, Maze3d> mazeHalfCollection;
+	private ExecutorService threadPool;
+	private HashMap<String, Maze3d> mazeCollection;
+	private HashMap<String, String> mazeToFile;
+	private HashMap<Maze3d, Solution<Position>> mazeSolutions;
+	private HashMap<String, Maze3d> mazeHalfCollection;
+	private Properties properties;
 	
-	
-	String errorCode;
-	String[] dirList;
-	String generate3dmazeCode;
-	int[][] crossSection;
-	String saveMazeCode;
-	String loadMazeCode;
-	int mazeSize;
-	long fileSize;
-	String solveMazeCode;
-	String solveHalfMazeCode;
+	private String errorCode;
+	private String[] dirList;
+	private String generate3dmazeCode;
+	private int[][] crossSection;
+	private String saveMazeCode;
+	private String loadMazeCode;
+	private int mazeSize;
+	private long fileSize;
+	private String solveMazeCode;
+	private String solveHalfMazeCode;
 	
 
 	
 
 	public MyModel() 
 	{
-		try {
-			XMLDecoder xmlD=new XMLDecoder(new FileInputStream("properties.xml"));
-			Properties p=(Properties)xmlD.readObject();
-			threadPool = Executors.newFixedThreadPool(p.getNumberOfThreads());
-			xmlD.close();
-		} catch (FileNotFoundException e1) {
+		
+		handleLoadXML(null);//loading the default xml file
 
-			e1.printStackTrace();
-		}
-		
-		
-		
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeHalfCollection=new HashMap<String,Maze3d>();
 		mazeToFile=new HashMap<String,String>();
@@ -183,12 +176,16 @@ public class MyModel extends CommonModel
 		}
 		if (mazeParam.length != 5) 
 		{
-			errorCode="Invalid number of parameters";
-			setChanged();
-			String[] s=new String[1];
-			s[0]="error";
-			notifyObservers(s);
-			return;
+			if(mazeParam.length!=4)
+			{
+				errorCode="Invalid number of parameters";
+				setChanged();
+				String[] s=new String[1];
+				s[0]="error";
+				notifyObservers(s);
+				return;
+			}
+			
 		}
 		try {
 			if ((Integer.parseInt(mazeParam[1]) <= 0) || (Integer.parseInt(mazeParam[2]) <= 0)|| (Integer.parseInt(mazeParam[3]) <= 0)) 
@@ -217,17 +214,47 @@ public class MyModel extends CommonModel
 			@Override
 			public String call() throws Exception
 			{
-
 				Maze3dGenerator mg;
-				if (mazeParam[mazeParam.length - 1].intern() == "simple") {
-					mg = new SimpleMaze3dGenerator();
-				} else if (mazeParam[mazeParam.length - 1].intern() == "prim") {
-					mg = new MyMaze3dGenerator();
-				} else {
-					errorCode="Invalid algorhtim name";
+				if(mazeParam.length==4)
+				{
+					if(properties.getAlgorithmToGenerateMaze().intern()=="simple")
+					{
+						mg = new SimpleMaze3dGenerator();
+					}
+					else if(properties.getAlgorithmToGenerateMaze().intern()=="prim")
+					{
+						mg = new MyMaze3dGenerator();
+					}
+					else
+					{
+						errorCode="Invalid algorithm";
+						
+						return "error";
+					}
+				}
+				else if(mazeParam.length==5)
+				{
+					if (mazeParam[mazeParam.length - 1].intern() == "simple")
+					{
+						mg = new SimpleMaze3dGenerator();
+					} 
+					else if (mazeParam[mazeParam.length - 1].intern() == "prim") {
+						mg = new MyMaze3dGenerator();
+					} 
+					else 
+					{
+						errorCode="Invalid algorithm";
+						
+						return "error";
+					}
+				}
+				else
+				{
+					errorCode="Invalid algorithm";
 					return "error";
 				}
-
+				
+				
 
 				mazeCollection.remove(mazeParam[0].toString());//removes a maze with the same name,if exists
 
@@ -794,15 +821,15 @@ public class MyModel extends CommonModel
 		{
 			if(paramArray.length!=2)
 			{
-				
-				errorCode="Invalid amount of parameters";
-				String[] s=new String[1];
-				s[0]="error";
-				setChanged();
-				notifyObservers(s);
-				return;
-					
-				
+				if(paramArray.length!=1)
+				{
+					errorCode="Invalid amount of parameters";
+					String[] s=new String[1];
+					s[0]="error";
+					setChanged();
+					notifyObservers(s);
+					return;
+				}
 			}
 		}
 		//check if i generated maze with this name
@@ -833,23 +860,27 @@ public class MyModel extends CommonModel
 			@Override
 			public String call() throws Exception
 			{
+				
 				StringBuilder algo=new StringBuilder();
-
-				
-				
-				for(int i=1;i<paramArray.length;i++)
+				if(paramArray.length==1)
 				{
-					if(i==paramArray.length-1)
+					algo.append(properties.getAlgorithmToSearch());
+				}
+				else
+				{
+					for(int i=1;i<paramArray.length;i++)
 					{
-						algo.append(paramArray[i]);
-					}
-					else
-					{
-						algo.append(paramArray[i]+" ");
+						if(i==paramArray.length-1)
+						{
+							algo.append(paramArray[i]);
+						}
+						else
+						{
+							algo.append(paramArray[i]+" ");
+						}
 					}
 				}
-				
-				
+
 				
 				if(algo.toString().equals("bfs"))
 				{
@@ -1012,15 +1043,16 @@ public class MyModel extends CommonModel
 		{
 			if(paramArray.length!=7)
 			{
-				
-				errorCode="Invalid amount of parameters";
-				String[] s=new String[1];
-				s[0]="error";
-				setChanged();
-				notifyObservers(s);
-				return;
-					
-				
+				if(paramArray.length!=4)
+				{
+					errorCode="Invalid amount of parameters";
+					String[] s=new String[1];
+					s[0]="error";
+					setChanged();
+					notifyObservers(s);
+					return;
+				}
+
 			}
 		}
 
@@ -1034,27 +1066,34 @@ public class MyModel extends CommonModel
 			public String call() throws Exception
 			{
 				StringBuilder algo=new StringBuilder();
-				
-				int length;
-				if(paramArray.length==5)
+				if(paramArray.length==4)
 				{
-					length=2;
+					algo.append(properties.getAlgorithmToSearch());
 				}
 				else
 				{
-					length=4;
-				}
-				for(int i=1;i<length;i++)
-				{
-					if(i==length-1)
+					int length;
+					if(paramArray.length==5)
 					{
-						algo.append(paramArray[i]);
+						length=2;
 					}
 					else
 					{
-						algo.append(paramArray[i]+" ");
+						length=4;
+					}
+					for(int i=1;i<length;i++)
+					{
+						if(i==length-1)
+						{
+							algo.append(paramArray[i]);
+						}
+						else
+						{
+							algo.append(paramArray[i]+" ");
+						}
 					}
 				}
+				
 				
 				
 				Maze3d maze=mazeCollection.get(paramArray[0]);
@@ -1212,8 +1251,59 @@ public class MyModel extends CommonModel
 		}
 	}
 	
+	public void handleLoadXML(String[] path)
+	{
+		
+		StringBuilder sb=new StringBuilder();
+		
+		if(path==null)
+		{
+			sb.append("properties.xml");
+		}
+		else if(path[0].intern()=="null")
+		{
+			sb.append("properties.xml");
+		}
+		else
+		{
+			for(int i=0;i<path.length;i++)
+			{
+				sb.append(path[i]);
+			}
+		}
+
+		try
+		{
+			File f=new File("properties.xml");
+			if(!f.exists())
+			{
+				errorCode="this file doesn't exists";
+				String[] s=new String[1];
+				s[0]="error";
+				setChanged();
+				notifyObservers(s);
+				return;
+			}
+			XMLDecoder xmlD= new XMLDecoder(new FileInputStream(sb.toString()));
+			properties=(Properties)xmlD.readObject();
+			
+			threadPool = Executors.newFixedThreadPool(properties.getNumberOfThreads());
+			xmlD.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			
+			e.printStackTrace();
+		}
+		
+	}
 	
 	
+	
+	public Properties getProperties() {
+		return properties;
+	}
+
 	public String getSolveHalfMazeCode() {
 		return solveHalfMazeCode;
 	}

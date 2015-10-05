@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -62,14 +63,13 @@ public class GenericWindow extends BasicWindow
 								
 								m.invoke(obj,Integer.parseInt(t.getText()));
 							} catch (IllegalAccessException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								showMessageBox(e);
 							} catch (IllegalArgumentException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								showMessageBox(e);
+
 							} catch (InvocationTargetException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								showMessageBox(e);
+
 							}
 							
 						}
@@ -126,7 +126,13 @@ public class GenericWindow extends BasicWindow
 
 	}
 
-	
+	public void showMessageBox(Exception e)
+	{
+		MessageBox messageBox = new MessageBox(shell,  SWT.ICON_ERROR| SWT.OK);
+		messageBox.setMessage(e.getMessage());
+		messageBox.setText("Error");
+		messageBox.open();
+	}
 
 	@Override
 	public void close() 

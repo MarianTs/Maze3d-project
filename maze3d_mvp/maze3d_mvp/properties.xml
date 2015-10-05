@@ -13,5 +13,8 @@
   <void property="numberOfThreads">
    <int>10</int>
   </void>
+  <void property="typeOfUserInterfece">
+   <string>gui</string>
+  </void>
  </object>
 </java>

@@ -22,7 +22,8 @@ import algorithms.search.Solution;
 
 public class MazeWindow extends BasicWindow 
 {
-
+	private Button solve;
+	private Button hint;
 	private Maze3d maze;
 	
 	private Maze2dDisplay mazeCanvas;
@@ -138,15 +139,16 @@ public class MazeWindow extends BasicWindow
 			}
 		});		
 		
-		Button solve=new Button(shell, SWT.PUSH);
+		solve=new Button(shell, SWT.PUSH);
 		solve.setText("solve");
 		solve.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
-		
+		solve.setEnabled(false);
 		solve.addListener(SWT.Selection, listenerCollection.get("solve"));
 		
-		Button hint=new Button(shell, SWT.PUSH);
+		hint=new Button(shell, SWT.PUSH);
 		hint.setText("hint");
 		hint.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
+		hint.setEnabled(false);
 		hint.addListener(SWT.Selection, listenerCollection.get("hint"));
 		
 		Button up=new Button(shell, SWT.ARROW|SWT.UP);
@@ -218,12 +220,20 @@ public class MazeWindow extends BasicWindow
 	
 	public void close()
 	{
-		mazeCanvas.close();
+		//mazeCanvas.close();
+		
 		shell.dispose();
 		
 		
 	}
-
+	public void setEnableToSolve()
+	{
+		solve.setEnabled(true);
+	}
+	public void setEnableToHint()
+	{
+		hint.setEnabled(true);
+	}
 	@Override
 	public Shell getShell() 
 	{

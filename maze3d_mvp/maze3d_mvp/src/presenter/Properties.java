@@ -16,22 +16,35 @@ public class Properties implements Serializable {
 	private String algorithmToSearch;
 	private String algorithmToGenerateMaze;
 	private int numOfClients;
+	private String typeOfUserInterfece;
 	
 	
-	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze,int numOfClients) {
+	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze,int numOfClients,String typeOfUserInterfece) 
+	{
 		super();
 		this.numberOfThreads = numberOfThreads;
 		this.algorithmToSearch = algorithmToSearch;
 		this.algorithmToGenerateMaze = algorithmToGenerateMaze;
 		this.numOfClients=numOfClients;
+		this.typeOfUserInterfece=typeOfUserInterfece;
 	}
 	
+	
+
 	public Properties(Properties p)
 	{
 		this.numberOfThreads=p.numberOfThreads;
 		this.algorithmToGenerateMaze=p.algorithmToGenerateMaze;
 		this.algorithmToSearch=p.algorithmToSearch;
 		this.numOfClients=p.numOfClients;
+	}
+	
+	public String getTypeOfUserInterfece() {
+		return typeOfUserInterfece;
+	}
+
+	public void setTypeOfUserInterfece(String typeOfUserInterfece) {
+		this.typeOfUserInterfece = typeOfUserInterfece;
 	}
 	public int getNumberOfThreads() 
 	{

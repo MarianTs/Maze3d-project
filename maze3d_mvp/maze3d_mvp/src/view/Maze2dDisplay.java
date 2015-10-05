@@ -133,7 +133,8 @@ public class Maze2dDisplay extends MazeDisplay {
 
 			@Override
 			public void run() {
-				getDisplay().syncExec(new Runnable() {
+				getDisplay().syncExec(new Runnable() 
+				{
 
 					@Override
 					public void run() 
@@ -349,12 +350,13 @@ public class Maze2dDisplay extends MazeDisplay {
 	{
 		if(timerTask!=null)
 		{
-			timerTask.cancel();
+			while(timerTask.cancel()==false);
 		}
 		if(timer!=null)
 		{
 			timer.cancel();
 		}
+		
 		
 	}
 

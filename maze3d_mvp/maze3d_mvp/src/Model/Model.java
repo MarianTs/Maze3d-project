@@ -2,6 +2,7 @@ package Model;
 
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import presenter.Properties;
 
 public interface Model 
 {
@@ -22,9 +23,9 @@ public interface Model
 	public void handleDisplaySolution(String[] paramArray);
 	public void handleSolveFrom(String[] paramArray);
 	public void handleDisplayHalfSolution(String[] paramArray);
+	public void handleLoadXML(String[] path);
 	
-	
-	
+	public Properties getProperties();
 	public Solution<Position> getSpecificHalfSolution(String name);
 	public String getSolveHalfMazeCode();
 	public String getErrorCode();

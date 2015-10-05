@@ -43,6 +43,7 @@ public class GUI extends CommonView
 	
 	public void initListeners()
 	{
+		
 		listenerCollection.put("exit",new Listener() 
 		{
 			 public void handleEvent(Event event) 
@@ -52,10 +53,11 @@ public class GUI extends CommonView
 				 messageBox.setText("Exiting Application");
 				 if(messageBox.open()==SWT.YES)
 				 {
-					 mainWindow.close();
+					 mainWindow.getMazeCanvas().close();
 					 message="exit";
 					 setChanged();
 					 notifyObservers();
+					 mainWindow.close();
 					 event.doit=true;
 				 }
 				 else
@@ -73,7 +75,7 @@ public class GUI extends CommonView
 				 FileDialog fd=new FileDialog(mainWindow.getShell(),SWT.OPEN);
 				 fd.setText("open");
 				 fd.setFilterPath(".");
-				 String[] filterExt = {  ".xml", "*.*" };
+				 String[] filterExt = {  "*.xml", "*.*" };
 				 fd.setFilterExtensions(filterExt);
 				 String path = fd.open();
 				 message="load xml "+ path;
@@ -87,6 +89,7 @@ public class GUI extends CommonView
 			
 			@Override
 			public void handleEvent(Event arg0) {
+				
 				genericWindow=new GenericWindow(200,200,listenerCollection,new MazeProperties());
 				genericWindow.run();
 				MazeProperties mp=(MazeProperties)genericWindow.getObj();
@@ -94,10 +97,11 @@ public class GUI extends CommonView
 				int y=mp.getWidth();
 				int z=mp.getDepth();
 				
-				message="generate 3d maze m "+x+" "+y+" "+z+" prim";
+				message="generate 3d maze m "+x+" "+y+" "+z;
 				setChanged();
 				notifyObservers();
-				
+				mainWindow.setEnableToSolve();
+				mainWindow.setEnableToHint();
 				
 			}
 		});
@@ -110,7 +114,7 @@ public class GUI extends CommonView
 				int x=mainWindow.getMazeCanvas().getCharacterPlace().getX();
 				int y=mainWindow.getMazeCanvas().getCharacterPlace().getY();
 				int z=mainWindow.getMazeCanvas().getCharacterPlace().getZ();
-				message="solve from m bfs "+x+" "+y+" "+z;
+				message="solve from m "+x+" "+y+" "+z;
 				isSolve=true;
 				setChanged();
 				notifyObservers();
@@ -124,7 +128,7 @@ public class GUI extends CommonView
 				int x=mainWindow.getMazeCanvas().getCharacterPlace().getX();
 				int y=mainWindow.getMazeCanvas().getCharacterPlace().getY();
 				int z=mainWindow.getMazeCanvas().getCharacterPlace().getZ();
-				message="solve from m bfs "+x+" "+y+" "+z;
+				message="solve from m "+x+" "+y+" "+z;
 				isSolve=false;
 				setChanged();
 				notifyObservers();
@@ -143,8 +147,13 @@ public class GUI extends CommonView
 	}
 
 	@Override
-	public void showError(String error) {
-		// TODO Auto-generated method stub
+	public void showError(String error) 
+	{
+		MessageBox messageBox = new MessageBox(mainWindow.getShell(),  SWT.ICON_ERROR| SWT.OK);
+		messageBox.setMessage(error);
+		messageBox.setText("Error");
+		int response = messageBox.open();
+		
 
 	}
 

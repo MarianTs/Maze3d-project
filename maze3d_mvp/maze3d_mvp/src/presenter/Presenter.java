@@ -180,6 +180,14 @@ public class Presenter implements Observer {
 				
 			}
 		});
+		viewCommands.put("load xml", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleLoadXML(args);
+				
+			}
+		});
 		viewCommands.put("load maze", new Command() {
 			
 			@Override
