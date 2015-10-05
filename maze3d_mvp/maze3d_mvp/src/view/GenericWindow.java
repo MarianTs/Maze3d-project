@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class GenericWindow extends BasicWindow 
@@ -137,6 +138,12 @@ public class GenericWindow extends BasicWindow
 
 	public Object getObj() {
 		return obj;
+	}
+
+	@Override
+	public Shell getShell() {
+
+		return shell;
 	}
 	
 	

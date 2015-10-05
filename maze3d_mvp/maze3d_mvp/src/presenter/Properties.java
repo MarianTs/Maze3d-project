@@ -12,16 +12,18 @@ public class Properties implements Serializable {
 	private static final long serialVersionUID = -7347981088324820375L;
 	
 	
-	int numberOfThreads;
-	String algorithmToSearch;
-	String algorithmToGenerateMaze;
+	private int numberOfThreads;
+	private String algorithmToSearch;
+	private String algorithmToGenerateMaze;
+	private int numOfClients;
 	
 	
-	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze) {
+	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze,int numOfClients) {
 		super();
 		this.numberOfThreads = numberOfThreads;
 		this.algorithmToSearch = algorithmToSearch;
 		this.algorithmToGenerateMaze = algorithmToGenerateMaze;
+		this.numOfClients=numOfClients;
 	}
 	
 	public Properties(Properties p)
@@ -29,12 +31,22 @@ public class Properties implements Serializable {
 		this.numberOfThreads=p.numberOfThreads;
 		this.algorithmToGenerateMaze=p.algorithmToGenerateMaze;
 		this.algorithmToSearch=p.algorithmToSearch;
+		this.numOfClients=p.numOfClients;
 	}
-	public int getNumberOfThreads() {
+	public int getNumberOfThreads() 
+	{
 		return numberOfThreads;
 	}
 	
 	
+	public int getNumOfClients() {
+		return numOfClients;
+	}
+
+	public void setNumOfClients(int numOfClients) {
+		this.numOfClients = numOfClients;
+	}
+
 	public void setNumberOfThreads(int numberOfThreads) {
 		this.numberOfThreads = numberOfThreads;
 	}

@@ -29,6 +29,10 @@ public interface View {
 	public void showSolveMaze(String message);
 	public void showDisplaySolution(Solution<Position> solution);
 	
+	public void showSolveFrom(String message);
+	
+	public void showDisplayHalfSolution(Solution<Position> solution);
+	
 	public void showExit();
 	
 	public void showHelp();

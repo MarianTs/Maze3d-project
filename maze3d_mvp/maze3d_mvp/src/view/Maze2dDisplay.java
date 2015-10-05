@@ -1,5 +1,9 @@
 package view;
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -7,12 +11,24 @@ import org.eclipse.swt.widgets.Composite;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
+import algorithms.search.Solution;
+import algorithms.search.State;
 
 public class Maze2dDisplay extends MazeDisplay {
 
-	Position characterPlace;
-	Boolean isStartingPoint;
-	GameCharacter gameCharacterPicture;
+	private Position characterPlace;
+	private Boolean isStartingPoint;
+	private GameCharacter gameCharacterPicture;
+	private Solution<Position> solution;
+	private TimerTask timerTask;
+	private Timer timer;
+	
+
+	
+
+	public Position getCharacterPlace() {
+		return characterPlace;
+	}
 
 	public Maze2dDisplay(Composite parent, int style,GameCharacter gCharacter) 
 	{
@@ -99,7 +115,81 @@ public class Maze2dDisplay extends MazeDisplay {
 		}
 
 	}
+	public void setSolution(Solution<Position> solution)
+	{
+		this.solution = solution;
+		System.out.println(solution);
+
+		
+	}
+	public void solve()
+	{
+
+		timer=new Timer();
+
+		ArrayList<State<Position>> al=solution.getAL();
+
+		timerTask=new TimerTask() {
+
+			@Override
+			public void run() {
+				getDisplay().syncExec(new Runnable() {
+
+					@Override
+					public void run() 
+					{
+						if(al.isEmpty())
+						{
+							return;
+						}
+						Position p=al.remove(0).getState();
+
+
+						int x=p.getX();
+						int y=p.getY();
+						int z=p.getZ();
+						characterPlace.setXYZ(x, y, z);
+						redraw();
+					}
+				});
+
+			}
+		};
+		timer.scheduleAtFixedRate(timerTask, 0, 500);
+
+	}
 	
+	public void hint()
+	{
+
+		ArrayList<State<Position>> al=solution.getAL();
+		if(al.isEmpty())
+		{
+			return;
+		}
+		Position p=al.get(1).getState();
+		if(p!=null)
+		{
+			int x=p.getX();
+			int y=p.getY();
+			int z=p.getZ();
+			characterPlace.setXYZ(x, y, z);
+			
+			getDisplay().syncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					paintMaze();
+					activatePainting();
+					
+				}
+			});
+			
+		}
+
+		
+
+	}
 	public void setMaze(Maze3d maze)
 	{
 		System.out.println("5 \n"+maze);
@@ -179,10 +269,7 @@ public class Maze2dDisplay extends MazeDisplay {
 			redraw();
 			
 		}
-		else
-		{
-			//MessageBox messageBox=new MessageBox(parent)
-		}
+		
 	}
 	public void moveDown()
 	{
@@ -257,6 +344,18 @@ public class Maze2dDisplay extends MazeDisplay {
 			redraw();
 			isStartingPoint=true;
 		}
+	}
+	public void close()
+	{
+		if(timerTask!=null)
+		{
+			timerTask.cancel();
+		}
+		if(timer!=null)
+		{
+			timer.cancel();
+		}
+		
 	}
 
 }

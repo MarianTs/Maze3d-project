@@ -112,6 +112,14 @@ public class Presenter implements Observer {
 			}
 			
 		});
+		viewCommands.put("display half solution", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) 
+			{
+				m.handleDisplayHalfSolution(args);
+			}
+		});
 		viewCommands.put("display solution", new Command() {
 			
 			@Override
@@ -196,6 +204,14 @@ public class Presenter implements Observer {
 				
 			}
 		});
+		viewCommands.put("solve from", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleSolveFrom(args);
+				
+			}
+		});
 		viewCommands.put("solve", new Command() {
 			
 			@Override
@@ -235,6 +251,7 @@ public class Presenter implements Observer {
 				
 			}
 		});
+		
 		modelCommands.put("display cross section by", new Command() {
 			
 			@Override
@@ -298,6 +315,16 @@ public class Presenter implements Observer {
 				ui.showFileSize(x);
 			}
 		});
+		modelCommands.put("solve from", new Command() {
+			
+			@Override
+			public void doCommand(String[] args)
+			{
+				
+				String s=m.getSolveHalfMazeCode();
+				ui.showSolveFrom(s);
+			}
+		});
 		modelCommands.put("solve", new Command() {
 			
 			@Override
@@ -314,6 +341,15 @@ public class Presenter implements Observer {
 			{
 				Solution<Position> sol=m.getSpecificSolution(args[0].toString());
 				ui.showDisplaySolution(sol);
+			}
+		});
+		modelCommands.put("display half solution", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				Solution<Position> sol=m.getSpecificHalfSolution(args[0].toString());
+				ui.showDisplayHalfSolution(sol);
+				
 			}
 		});
 	}

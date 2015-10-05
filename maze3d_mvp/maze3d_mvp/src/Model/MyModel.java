@@ -44,6 +44,7 @@ public class MyModel extends CommonModel
 	HashMap<String, Maze3d> mazeCollection;
 	HashMap<String, String> mazeToFile;
 	HashMap<Maze3d, Solution<Position>> mazeSolutions;
+	HashMap<String, Maze3d> mazeHalfCollection;
 	
 	
 	String errorCode;
@@ -55,7 +56,7 @@ public class MyModel extends CommonModel
 	int mazeSize;
 	long fileSize;
 	String solveMazeCode;
-
+	String solveHalfMazeCode;
 	
 
 	
@@ -75,6 +76,7 @@ public class MyModel extends CommonModel
 		
 		
 		mazeCollection = new HashMap<String, Maze3d>();
+		mazeHalfCollection=new HashMap<String,Maze3d>();
 		mazeToFile=new HashMap<String,String>();
 		
 		mazeSolutions=new HashMap<Maze3d, Solution<Position>>();
@@ -785,16 +787,22 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
+		
+		
+		
 		if(paramArray.length!=4)
 		{
 			if(paramArray.length!=2)
 			{
+				
 				errorCode="Invalid amount of parameters";
 				String[] s=new String[1];
 				s[0]="error";
 				setChanged();
 				notifyObservers(s);
 				return;
+					
+				
 			}
 		}
 		//check if i generated maze with this name
@@ -826,6 +834,9 @@ public class MyModel extends CommonModel
 			public String call() throws Exception
 			{
 				StringBuilder algo=new StringBuilder();
+
+				
+				
 				for(int i=1;i<paramArray.length;i++)
 				{
 					if(i==paramArray.length-1)
@@ -837,7 +848,8 @@ public class MyModel extends CommonModel
 						algo.append(paramArray[i]+" ");
 					}
 				}
-
+				
+				
 				
 				if(algo.toString().equals("bfs"))
 				{
@@ -982,14 +994,238 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
+	public void handleSolveFrom(String[] paramArray)
+	{
+		if(paramArray==null)
+		{
+			errorCode="Invalid parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		
+		
+		
+		if(paramArray.length!=5)
+		{
+			if(paramArray.length!=7)
+			{
+				
+				errorCode="Invalid amount of parameters";
+				String[] s=new String[1];
+				s[0]="error";
+				setChanged();
+				notifyObservers(s);
+				return;
+					
+				
+			}
+		}
+
+
+		
+		//thread which generates solution for the maze
+		Future<String> future=threadPool.submit(new Callable<String>()
+		{
+
+			@Override
+			public String call() throws Exception
+			{
+				StringBuilder algo=new StringBuilder();
+				
+				int length;
+				if(paramArray.length==5)
+				{
+					length=2;
+				}
+				else
+				{
+					length=4;
+				}
+				for(int i=1;i<length;i++)
+				{
+					if(i==length-1)
+					{
+						algo.append(paramArray[i]);
+					}
+					else
+					{
+						algo.append(paramArray[i]+" ");
+					}
+				}
+				
+				
+				Maze3d maze=mazeCollection.get(paramArray[0]);
+				int x=Integer.parseInt(paramArray[paramArray.length-3]);
+				int y=Integer.parseInt(paramArray[paramArray.length-2]);
+				int z=Integer.parseInt(paramArray[paramArray.length-1]);
+				maze.setStartPosition(new Position(x,y,z));
+				
+				if(algo.toString().equals("bfs"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(maze);
+					
+					Searcher<Position> bfs=new BFS<Position>();
+					Solution<Position> sol=bfs.search(ms);
+					mazeSolutions.put(maze, sol);
+					
+					mazeHalfCollection.put(paramArray[0].toString(),maze);
+					
+					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
+					return "solve from";
+				}
+				else if(algo.toString().equals("astar air distance"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(maze);
+					Searcher<Position> AstarAir=new AStar<Position>(new MazeAirDistance());
+					
+					Solution<Position> sol=AstarAir.search(ms);
+					
+					mazeSolutions.put(maze, sol);
+					
+					//put it into half collection of mazes with half solutions(solutions that begin from the middle of the maze)
+					mazeHalfCollection.put(paramArray[0].toString(),maze);
+					
+					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
+					return "solve from";
+				}
+				else if(algo.toString().equals("astar manhatten distance"))
+				{
+					Maze3dSearchable ms=new Maze3dSearchable(maze);
+					Searcher<Position> AStarMan=new AStar<Position>(new MazeManhattenDistance());
+					
+					Solution<Position> sol=AStarMan.search(ms);
+					mazeSolutions.put(maze, sol);
+					
+					mazeHalfCollection.put(paramArray[0].toString(),maze);
+					
+					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
+					return "solve from ";
+				}
+				else
+				{
+					errorCode="Invalid algorithm";
+					return "error";
+				}
+				
+			
+				
+			}
+		});
+		
+		threadPool.execute(new Runnable() 
+		{
+			
+			@Override
+			public void run() 
+			{
+				try 
+				{
+					String message=future.get();
+					if(message.intern()=="error")
+					{
+
+						//we already put the error in errorCode
+						setChanged();
+						String[] s=new String[1];
+						s[0]="error";
+						notifyObservers(s);
+						return;
+					}
+					else
+					{
+						setChanged();
+						String[] s=new String[1];
+						s[0]="solve from";
+						notifyObservers(s);
+						return;
+					}
+					
+				}
+				
+				catch (InterruptedException e) 
+				{
+					e.printStackTrace();
+				} 
+				catch (ExecutionException e) 
+				{
+					e.printStackTrace();
+				}
+				
+			}
+		});
+	}
+	
+	public void handleDisplayHalfSolution(String[] paramArray)
+	{
+		if(paramArray==null)
+		{
+			errorCode="Invalid parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		if(paramArray.length!=1)
+		{
+			errorCode="Invalid amount of parametrs";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		
+		if(!(mazeHalfCollection.containsKey(paramArray[0].toString())))
+		{
+			errorCode="Maze with this name doesn't exists";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		
+		if(mazeSolutions.containsKey(mazeHalfCollection.get(paramArray[0])))
+		{
+			
+			
+			String[] s=new String[2];
+			s[0]="display half solution";
+			s[1]=paramArray[0].toString();
+
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+		else
+		{
+			errorCode="Solution doesn't exists(use solve command first)";
+			String[] s=new String[1];
+			s[0]="error";
+			setChanged();
+			notifyObservers(s);
+			return;
+		}
+	}
 	
 	
 	
-	
+	public String getSolveHalfMazeCode() {
+		return solveHalfMazeCode;
+	}
+
 	public Solution<Position> getSpecificSolution(String name)
 	{
 		return mazeSolutions.get(mazeCollection.get(name));
 	}
+	public Solution<Position> getSpecificHalfSolution(String name)
+	{
+		return mazeSolutions.get(mazeHalfCollection.get(name));
+	} 
 
 	public String getSolveMazeCode() 
 	{

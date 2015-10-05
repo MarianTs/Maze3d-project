@@ -7,6 +7,9 @@
   <void property="algorithmToSearch">
    <string>astar air distance</string>
   </void>
+  <void property="numOfClients">
+   <int>5</int>
+  </void>
   <void property="numberOfThreads">
    <int>10</int>
   </void>

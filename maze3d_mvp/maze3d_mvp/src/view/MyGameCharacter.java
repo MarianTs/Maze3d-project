@@ -12,8 +12,8 @@ public class MyGameCharacter implements GameCharacter {
 
 	public void paint(PaintEvent e,int x,int y, int width, int height) 
 	{
-		e.gc.setForeground(new Color(null, 255, 0, 0));
-		e.gc.drawOval(x, y, width, height);
+		e.gc.setForeground(new Color(null,34, 156, 34));
+		e.gc.fillOval(x, y, width, height);
 	}
 
 }

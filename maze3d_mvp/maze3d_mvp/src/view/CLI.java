@@ -221,4 +221,8 @@ public class CLI extends CommonView
 		out.println("<> -You have to write the requested string inside,{} -choose one of the fallwing and write inside the brackets");
 		out.flush();
 	}
+	@Override
+	public void showSolveFrom(String message) {}
+	@Override
+	public void showDisplayHalfSolution(Solution<Position> solution) {}
 }

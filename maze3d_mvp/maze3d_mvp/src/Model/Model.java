@@ -20,9 +20,13 @@ public interface Model
 	public void handleFileSize(String[] paramArray);
 	public void handleSolveMaze(String[] paramArray);
 	public void handleDisplaySolution(String[] paramArray);
+	public void handleSolveFrom(String[] paramArray);
+	public void handleDisplayHalfSolution(String[] paramArray);
 	
 	
 	
+	public Solution<Position> getSpecificHalfSolution(String name);
+	public String getSolveHalfMazeCode();
 	public String getErrorCode();
 	public String[] getDirList();
 	public String getGenerate3dmazeCode();

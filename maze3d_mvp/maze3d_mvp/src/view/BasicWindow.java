@@ -37,9 +37,7 @@ public abstract class BasicWindow
 	 	
 	 	
 	 	
-	 	public Shell getShell() {
-			return shell;
-		}
+	 	public abstract Shell getShell();
 
 
 

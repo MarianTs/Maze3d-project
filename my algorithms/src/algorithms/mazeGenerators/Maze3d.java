@@ -144,7 +144,8 @@ public class Maze3d implements Serializable
 	 * set the entrance of the maze
 	 * @param startPosition entrance point
 	 */
-	public void setStartPosition(Position startPosition) {
+	public void setStartPosition(Position startPosition) 
+	{
 		this.startPosition = startPosition;
 	}
 	
