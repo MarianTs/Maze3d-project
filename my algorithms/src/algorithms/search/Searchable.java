@@ -35,5 +35,11 @@ public interface Searchable<T>
 	 * @return the cost to move between the basic passage to the next passage
 	 */
 	public double getPassageCost(State<T> a,State<T> b);
-
+	/**
+	 * checking if searchable is valid,if there is a search problem(maze)...(for junit)
+	 * @return true is the searchable is valid
+	 * 		   false if the searchable is invalid
+	 */
+	public boolean checkIfSerachableIsValid();
+	
 }

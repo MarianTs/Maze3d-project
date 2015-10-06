@@ -22,6 +22,7 @@ public class Maze3dSearchable extends CommonSearchable<Position> {
 	 */
 	public Maze3dSearchable(Maze3d maze) {
 		super();
+		
 		this.maze = maze;
 	}
 	/**
@@ -30,7 +31,10 @@ public class Maze3dSearchable extends CommonSearchable<Position> {
 	@Override
 	public State<Position> getStartState() 
 	{
-		
+		if(!checkIfSerachableIsValid())
+		{
+			return null;
+		}
 		State<Position> s=new State<Position>(maze.getStartPosition());
 		return s;
 	}
@@ -38,7 +42,12 @@ public class Maze3dSearchable extends CommonSearchable<Position> {
 	 * getting the goal state of the maze
 	 */
 	@Override
-	public State<Position> getGoalState() {
+	public State<Position> getGoalState()
+	{
+		if(!checkIfSerachableIsValid())
+		{
+			return null;
+		}
 		return new State<Position>(maze.getGoalPosition());
 	}
 	/**
@@ -47,6 +56,10 @@ public class Maze3dSearchable extends CommonSearchable<Position> {
 	@Override
 	public ArrayList<State<Position>> getAllPossibleStates(State<Position> s) 
 	{
+		if(!checkIfSerachableIsValid())
+		{
+			return null;
+		}
 		ArrayList<State<Position>> AL=new ArrayList<State<Position>>();
 		ArrayList<Position> ALP=maze.getAllPosibleStates(s.getState());
 		for(int i=0;i<ALP.size();i++)
@@ -59,9 +72,30 @@ public class Maze3dSearchable extends CommonSearchable<Position> {
 	 * get the cost between two states in the maze
 	 */
 	@Override
-	public double getPassageCost(State<Position> a, State<Position> b) {
+	public double getPassageCost(State<Position> a, State<Position> b) 
+	{
+		if(!checkIfSerachableIsValid())
+		{
+			return -1;
+		}
 		return 1;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean checkIfSerachableIsValid() {
+		if(maze==null)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+		
+	}
+	
 	
 
 }

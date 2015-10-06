@@ -27,6 +27,15 @@ public abstract class CommonBFS<T> extends CommonSearcher<T>
 	@Override
 	public Solution<T> search(Searchable<T> s) 
 	{
+		
+		if(s==null)
+		{
+			return null;
+		}
+		if(!s.checkIfSerachableIsValid())
+		{
+			return null;
+		}
 		addToOpenList(s.getStartState());
 		HashSet<State<T>> closedSet=new HashSet<State<T>>();
 		
@@ -49,7 +58,10 @@ public abstract class CommonBFS<T> extends CommonSearcher<T>
 			for(State<T> state : successors)//this state is without cost
 			{
 				double currCost=calculateCost(n, state, s);
-				
+				if(currCost==-1)
+				{
+					return null;
+				}
 				if(!closedSet.contains(state) && ! openListContains(state))
 				{
 					state.setCameFrom(n);
