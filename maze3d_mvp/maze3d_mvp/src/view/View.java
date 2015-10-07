@@ -2,6 +2,7 @@ package view;
 
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
+import presenter.Properties;
 
 public interface View {
 	public void start();
@@ -36,4 +37,6 @@ public interface View {
 	public void showExit();
 	
 	public void showHelp();
+	
+	public void showLoadXML(Properties p);
 }

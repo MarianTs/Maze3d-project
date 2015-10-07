@@ -3,6 +3,7 @@ package view;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,7 +30,7 @@ public class GenericWindow extends BasicWindow
 	{
 		super(obj.getClass().getName(), width, height,listenerCollection);
 		this.obj=obj;
-
+ 		initWidgets();
 
 	}
 
@@ -51,10 +52,12 @@ public class GenericWindow extends BasicWindow
 				Label label=new Label(shell,SWT.NONE);
 				label.setText(methodName.substring(3)+":");
 				label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-				if(m.getReturnType().isPrimitive())
+				Parameter[] paramArr=m.getParameters();
+				Text t=new Text(shell, SWT.SINGLE);
+				t.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false,1, 1));
+				if(paramArr[0].getType().isAssignableFrom(int.class))
 				{
-					Text t=new Text(shell, SWT.SINGLE);
-					t.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false,1, 1));
+					
 					t.addModifyListener(new ModifyListener() {
 						
 						@Override
@@ -75,6 +78,32 @@ public class GenericWindow extends BasicWindow
 						}
 					});
 					
+					
+				}
+				else if(paramArr[0].getType().isAssignableFrom(String.class))
+				{
+					t.addModifyListener(new ModifyListener() {
+						
+						@Override
+						public void modifyText(ModifyEvent arg0) {
+							try {
+								
+								m.invoke(obj,t.getText());
+							} catch (IllegalAccessException e) {
+								showMessageBox(e);
+							} catch (IllegalArgumentException e) {
+								showMessageBox(e);
+
+							} catch (InvocationTargetException e) {
+								showMessageBox(e);
+
+							}
+							
+						}
+					});
+				}
+				else if(paramArr[0].getType().isEnum())
+				{
 					
 				}
 				
@@ -118,6 +147,7 @@ public class GenericWindow extends BasicWindow
 			
 			@Override
 			public void handleEvent(Event arg0) {
+				obj=null;
 				close();
 				
 			}
@@ -128,7 +158,7 @@ public class GenericWindow extends BasicWindow
 
 	public void showMessageBox(Exception e)
 	{
-		MessageBox messageBox = new MessageBox(shell,  SWT.ICON_ERROR| SWT.OK);
+		MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
 		messageBox.setMessage(e.getMessage());
 		messageBox.setText("Error");
 		messageBox.open();

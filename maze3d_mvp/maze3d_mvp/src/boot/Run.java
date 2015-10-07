@@ -21,8 +21,8 @@ public class Run {
 
 	public static void main(String[] args) {
 		
-
-		CommonModel m = new MyModel();
+		
+		CommonModel m = new MyModel(args);
 		String s=m.getProperties().getTypeOfUserInterfece();
 		CommonView ui;
 		

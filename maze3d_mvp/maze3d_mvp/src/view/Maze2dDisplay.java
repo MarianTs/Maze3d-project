@@ -1,15 +1,12 @@
 package view;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import algorithms.mazeGenerators.Maze3d;
@@ -20,11 +17,14 @@ import algorithms.search.State;
 public class Maze2dDisplay extends MazeDisplay {
 
 	private Position characterPlace;
-	private Boolean isStartingPoint;
-	private GameCharacter gameCharacterPicture;
-	private Solution<Position> solution;
-	private TimerTask timerTask;
-	private Timer timer;
+	private MyGameCharacter characterPic;
+	
+	private Button up;
+	private Button down;
+
+	Thread thread;
+//	private TimerTask timerTask;
+//	private Timer timer;
 	
 
 	
@@ -33,39 +33,33 @@ public class Maze2dDisplay extends MazeDisplay {
 		return characterPlace;
 	}
 
-	public Maze2dDisplay(Composite parent, int style,GameCharacter gCharacter) 
+	public Maze2dDisplay(Composite parent, int style,MyGameCharacter characterPic) 
 	{
 		super(parent, style);
 		setBackground(new Color(null, 255, 255, 255));
-		isStartingPoint=true;
-		characterPlace=new Position();
-		this.gameCharacterPicture=gCharacter;
-		initListeners();
+		this.characterPlace=null;
+		this.characterPic=characterPic;
+
 	}
 
 	public void paintMaze() 
 	{
-		
-		if (maze != null) 
-		{
 
-			addPaintListener(new PaintListener() {
+		addPaintListener(new PaintListener() {
 
-				@Override
-				public void paintControl(PaintEvent e) {
-					
-					
+			@Override
+			public void paintControl(PaintEvent e) {
+
+				if(maze!=null)
+				{
+
+
 					e.gc.setForeground(new Color(null, 0, 0, 0));
 					e.gc.setBackground(new Color(null, 75,	0	,130));
-					
+
 					int[][][] mazeData = maze.getMaze();
-					if(isStartingPoint)
-					{
-						characterPlace = maze.getStartPosition();
-						isStartingPoint=false;
-					}
-					
-					
+
+
 
 					int width = getSize().x;// how many pixels there are in the canvas in the width(z in the maze)
 					int depth = getSize().y;// how many pixels there is on the canvas in height(y in the maze)
@@ -73,9 +67,9 @@ public class Maze2dDisplay extends MazeDisplay {
 					// the size of each cell in the canvas,according to the size of the changing window
 					int cellX = width / mazeData[0][0].length;// the width of the cell
 					int cellY = depth / mazeData[0].length; // the height of the cell
-					
-					
-					
+
+
+
 
 					// for calculating the size of the maze floor
 					int lengthWidth = mazeData[0][0].length;// the length of z axis in the maze
@@ -92,148 +86,118 @@ public class Maze2dDisplay extends MazeDisplay {
 								e.gc.fillRectangle(pixelX, pixelY, cellX, cellY);
 								// drawing rectangle from the node cell size
 							}
-							
+
 						}
 					}
-					//e.gc.setBackground(new Color(null,255,0,0));
-					//e.gc.fillRectangle(maze.getStartPosition().getZ()*cellX, maze.getStartPosition().getY()*cellY, cellX, cellY);
+
 					if(characterPlace.getX()==maze.getGoalPosition().getX())
 					{
-						e.gc.setBackground(new Color(null,0,255,0));
-						e.gc.fillRectangle(maze.getGoalPosition().getZ()*cellX, maze.getGoalPosition().getY()*cellY, cellX, cellY);
+						//e.gc.setBackground(new Color(null,0,255,0));
+						//e.gc.fillRectangle(maze.getGoalPosition().getZ()*cellX, maze.getGoalPosition().getY()*cellY, cellX, cellY);
+						Image image = new Image(e.display, "./resources/banana.jpg");
+						e.gc.setBackground(new Color(null,200,0,0));						
+						e.gc.drawImage(image, 0, 0, image.getBounds().width,image.getBounds().height,maze.getGoalPosition().getZ()*cellX,maze.getGoalPosition().getY()*cellY ,cellX ,cellY);							
+						e.gc.setBackground(new Color(null,255,0,0));
+						e.gc.setBackground(new Color(null,0,0,0));
 					}
-					/*if(characterPlace.getX()==maze.getStartPosition().getX())
+//					if(characterPlace.getX()==maze.getStartPosition().getX())
+//					{
+//						e.gc.setBackground(new Color(null,0,45,0));
+//						e.gc.fillRectangle(maze.getStartPosition().getZ()*cellX, maze.getStartPosition().getY()*cellY, cellX, cellY);
+//						e.gc.setBackground(new Color(null,0,45,0));
+//					}
+					if(characterPlace.equals(maze.getGoalPosition()))
 					{
-						e.gc.setBackground(new Color(null,0,45,0));
-						e.gc.fillRectangle(maze.getStartPosition().getZ()*cellX, maze.getStartPosition().getY()*cellY, cellX, cellY);
-					}*/
-					
-					
-					
-					gameCharacterPicture.paint(e,characterPlace.getZ()*cellX,characterPlace.getY()*cellY, cellX, cellY);
+						Image im=new Image(getDisplay(), "./resources/FotorCreated.jpg");
+						e.gc.drawImage(im,0,0,im.getBounds().width,im.getBounds().height,width/4,depth/4,width/2,depth/2);
 
-				}
-			});
-			
-		}
+					}
 
-	}
-	public void initListeners()
-	{
-		this.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent arg) 
-			{
-	
-				//arg.doit=true;
-				if(arg.keyCode==SWT.ARROW_RIGHT)
-				{
-					moveRight();
-				}
-				else if(arg.keyCode==SWT.ARROW_LEFT)
-				{
-					moveLeft();
-				}
-				else if(arg.keyCode==SWT.ARROW_UP)
-				{
-					moveUp();
-					
-				}
-				else if(arg.keyCode==SWT.ARROW_DOWN)
-				{
-					moveDown();
-				}
-				else if(arg.keyCode==SWT.PAGE_DOWN)
-				{
-					moveBelow();
-				}
-				else if(arg.keyCode==SWT.PAGE_UP)
-				{
-					moveAbove();
+
+					characterPic.paint(e,characterPlace.getZ()*cellX,characterPlace.getY()*cellY, cellX, cellY);
 				}
 			}
+		});
+
+		
+
+	}
+	
+	
+	public void solve(Solution<Position> solution)
+	{
+		//timer=new ScheduledThreadPoolExecutor(10);
+		//timer=new Timer();
+
+		ArrayList<State<Position>> al=solution.getAL();
+		
+		
+		thread=new Thread(new Runnable() {
 			
 			@Override
-			public void keyPressed(KeyEvent arg) 
+			public void run() 
 			{
-				//arg.doit=true;
-				if(arg.keyCode==SWT.RIGHT)
+				for(State<Position> s:al)
 				{
-					moveRight();
-				}
-				else if(arg.keyCode==SWT.LEFT)
-				{
-					moveLeft();
-				}
-				else if(arg.keyCode==SWT.UP)
-				{
-					moveUp();
+					Position p=s.getState();
+					int x=p.getX();
+					int y=p.getY();
+					int z=p.getZ();
+					characterPlace.setXYZ(x, y, z);
+					getDisplay().syncExec(new Runnable() {
+						
+						@Override
+						public void run() {
+							redraw();
+							
+						}
+					});
 					
-				}
-				else if(arg.keyCode==SWT.DOWN)
-				{
-					moveDown();
-				}
-				else if((arg.stateMask & SWT.PAGE_DOWN)!=0)
-				{
-					moveBelow();
-				}
-				else if((arg.stateMask & SWT.PAGE_UP)!=0)
-				{
-					moveAbove();
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						
+						e.printStackTrace();
+					}
 				}
 				
 			}
 		});
-	}
-	public void setSolution(Solution<Position> solution)
-	{
-		this.solution = solution;
-		System.out.println(solution);
-
+		thread.start();
 		
-	}
-	public void solve()
-	{
-		//timer=new ScheduledThreadPoolExecutor(10);
-		timer=new Timer();
-
-		ArrayList<State<Position>> al=solution.getAL();
-
-		timerTask=new TimerTask() {
-
-			@Override
-			public void run() {
-				getDisplay().syncExec(new Runnable() 
-				{
-
-					@Override
-					public void run() 
-					{
-						if(al.isEmpty())
-						{
-							return;
-						}
-						Position p=al.remove(0).getState();
-
-
-						int x=p.getX();
-						int y=p.getY();
-						int z=p.getZ();
-						characterPlace.setXYZ(x, y, z);
-						redraw();
-					}
-				});
-
-			}
-		};
-		//timer.scheduleAtFixedRate(timerTask, 0, 500, TimeUnit.MILLISECONDS);
-		timer.scheduleAtFixedRate(timerTask, 0, 500);
+//		timerTask=new TimerTask() {
+//
+//			@Override
+//			public void run() {
+//				getDisplay().syncExec(new Runnable() 
+//				{
+//
+//					@Override
+//					public void run() 
+//					{
+//						if(al.isEmpty())
+//						{
+//							return;
+//						}
+//						Position p=al.remove(0).getState();
+//
+//
+//						int x=p.getX();
+//						int y=p.getY();
+//						int z=p.getZ();
+//						characterPlace.setXYZ(x, y, z);
+//						redraw();
+//					}
+//				});
+//
+//			}
+//		};
+//		//timer.scheduleAtFixedRate(timerTask, 0, 500, TimeUnit.MILLISECONDS);
+//		timer.scheduleAtFixedRate(timerTask, 0, 500);
 
 	}
 	
-	public void hint()
+	public void hint(Solution<Position> solution)
 	{
 
 		ArrayList<State<Position>> al=solution.getAL();
@@ -252,30 +216,51 @@ public class Maze2dDisplay extends MazeDisplay {
 			getDisplay().syncExec(new Runnable() {
 				
 				@Override
-				public void run() {
-					paintMaze();
-					activatePainting();
-					
+				public void run() 
+				{
+					redraw();
+					//calling paint event
 				}
 			});
 			
 		}
 
-		
 
+	}
+	
+	public void reset()
+	{
+		if((thread!=null)&&(thread.isInterrupted()==false))
+		{
+			thread.interrupt();
+		}
+		characterPlace.setXYZ(maze.getStartPosition().getX(), maze.getStartPosition().getY(), maze.getStartPosition().getZ());
+		redraw();
+	}
+	
+	
+	public void setUpButton(Button up)
+	{
+		this.up=up;
+	}
+	public void setDownButton(Button down)
+	{
+		this.down=down;
 	}
 	public void setMaze(Maze3d maze)
 	{
-		
+		//only here I got maze
 		this.maze = maze;
-		
+		this.characterPlace=new Position(maze.getStartPosition().getX(),maze.getStartPosition().getY(),maze.getStartPosition().getZ());
 		getDisplay().syncExec(new Runnable() {
 			
 			@Override
 			public void run() 
 			{
+				//now I will initialize the the paint listener
 				paintMaze();
-				activatePainting();
+				//activate paint listener
+				redraw();
 				
 			}
 		});
@@ -289,6 +274,10 @@ public class Maze2dDisplay extends MazeDisplay {
 		if(maze!=null)
 		{
 			int[][][] mazeData=maze.getMaze();
+			if((characterPlace.equals(maze.getStartPosition()))||(characterPlace.equals(maze.getGoalPosition())))
+			{
+				return false;
+			}
 			if((x<mazeData.length-1)&&(mazeData[x+1][y][z]==0))
 			{
 				return true;
@@ -314,6 +303,10 @@ public class Maze2dDisplay extends MazeDisplay {
 		if(maze!=null)
 		{
 			int[][][] mazeData=maze.getMaze();
+			if((characterPlace.equals(maze.getStartPosition()))||(characterPlace.equals(maze.getGoalPosition())))
+			{
+				return false;
+			}
 			if((x>0)&&(mazeData[x-1][y][z]==0))
 			{
 				return true;
@@ -340,6 +333,14 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((y>0)&&(mazeData[x][y-1][z]==0))
 		{
 			characterPlace.setXYZ(x, y-1, z);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
@@ -354,6 +355,14 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((y<mazeData[0].length-1)&&(mazeData[x][y+1][z]==0))
 		{
 			characterPlace.setXYZ(x, y+1, z);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
@@ -367,6 +376,14 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((z<mazeData[0][0].length-1)&&(mazeData[x][y][z+1]==0))
 		{
 			characterPlace.setXYZ(x, y, z+1);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
@@ -380,6 +397,14 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((z>0)&&(mazeData[x][y][z-1]==0))
 		{
 			characterPlace.setXYZ(x, y, z-1);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
@@ -393,6 +418,14 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((x<mazeData.length-1)&&(mazeData[x+1][y][z]==0))
 		{
 			characterPlace.setXYZ(x+1, y,z);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
@@ -406,28 +439,29 @@ public class Maze2dDisplay extends MazeDisplay {
 		if((x>0)&&(mazeData[x-1][y][z]==0))
 		{
 			characterPlace.setXYZ(x-1, y,z);
+			if(canBeMovedUp())
+			{
+				up.setEnabled(true);
+			}
+			if(canBeMovedDown())
+			{
+				down.setEnabled(true);
+			}
 			redraw();
 			
 		}
 	}
 	
-	public void activatePainting()
-	{
-		if(maze!=null)
-		{
-			redraw();
-			isStartingPoint=true;
-		}
-	}
+	
 	public void close()
 	{
-		if(timerTask!=null)
-		{
-			timerTask.cancel();
-		}
-		if(timer!=null)
-		{
-			timer.cancel();
+//		if(timerTask!=null)
+//		{
+//			timerTask.cancel();
+//		}
+//		if(timer!=null)
+//		{
+//			timer.cancel();
 //			try 
 //			{
 //				while(timer.awaitTermination(10, TimeUnit.SECONDS));
@@ -437,6 +471,10 @@ public class Maze2dDisplay extends MazeDisplay {
 //
 //				e.printStackTrace();
 //			}
+//		}
+		if((thread!=null)&&(!thread.isInterrupted()))
+		{
+			thread.interrupt();
 		}
 		
 		

@@ -14,7 +14,7 @@
    <int>10</int>
   </void>
   <void property="typeOfUserInterfece">
-   <string>cli</string>
+   <string>gui</string>
   </void>
  </object>
 </java>

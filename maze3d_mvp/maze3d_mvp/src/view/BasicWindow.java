@@ -33,6 +33,7 @@ public abstract class BasicWindow
 	 		this.shell.setText(title);
 	 		this.listenerCollection=listenerCollection;
 
+
 		}
 	 	
 	 	
@@ -46,7 +47,7 @@ public abstract class BasicWindow
 	 	
 		public void run() 
 		{
-			initWidgets();
+			//initWidgets();
 			//mainShell.pack();
 
 			shell.open();

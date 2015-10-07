@@ -16,9 +16,17 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 	@Override
 	public Maze3d generate(int size_x, int size_y, int size_z) 
 	{
-		
+		Maze3d myMaze;
+		if((size_x<4)||(size_y<4)||(size_z<4))
+		{
+			myMaze=new Maze3d(4, 4, 4);
+		}
+		else
+		{
+			myMaze=new Maze3d(size_x, size_y, size_z);
+		}
 		//I used Prim's algorithm
-		Maze3d myMaze=new Maze3d(size_x, size_y, size_z);
+		
 		ArrayList<Position> AL=new ArrayList<Position>();//array of walls
 		int i,j,n;
 		int randomCell=0;
@@ -57,21 +65,59 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			AL.remove(randomCell);
 		}
 		
-		//till now we dont have any exits	
+		//till now we don't have any exits	
 		entrance=findExits(myMaze);
 
 		do
 		{
 			exit=findExits(myMaze);
-		}while(entrance==exit);
+		}while(isClose(entrance, exit));
 		
+		myMaze.setValueInPlace(entrance, 0);
+		myMaze.setValueInPlace(exit, 0);
 		
 		myMaze.setStartPosition(entrance);
 		myMaze.setGoalPosition(exit);
 		
 		return myMaze;
 	}
-	
+	/**
+	 * checking if two positions are close
+	 * @param a position a
+	 * @param b position b
+	 * @return true-if close(one cell distance),false-if far
+	 */
+	private Boolean isClose(Position a,Position b)
+	{
+		int xa=a.getX();
+		int ya=a.getY();
+		int za=a.getZ();
+		
+		int xb=b.getX();
+		int yb=b.getY();
+		int zb=b.getZ();
+		
+		if((xa==xb)&&(ya==yb)&&(za==zb))
+		{
+			return true;
+		}
+		else if((xa+1==xb)||(xa-1==xb))
+		{
+			return true;
+		}
+		else if((ya-1==yb)||(ya-1==yb))
+		{
+			return true;
+		}
+		else if((za+1==zb)||(za-1==zb))
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	}
 	/**
 	 * generating exits in builded maze
 	 * @param myMaze the maze we generate there the exits
@@ -81,7 +127,7 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 	{
 		Random rand=new Random();
 		int i,j,n;
-		int numOfEntrancesFound=0;
+
 		Position entrance=new Position();
 		int size_x=myMaze.getSize_x();
 		int size_y=myMaze.getSize_y();
@@ -95,12 +141,12 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			{
 				for(j=0;j<size_z;j++)
 				{
-					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1))
-						//check if there is a an empty space so we can insert the entrance nearby
+					if(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1)//check if there is a an empty space so we can insert the entrance nearby
 					{
-						myMaze.setValueInPlace(n, i, j, 0);
+						
 						entrance=new Position(n,i,j);
-						numOfEntrancesFound++;//we found one exit..now lets stop and find the next one
+						return entrance;
+						
 					}
 				}
 
@@ -112,11 +158,11 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			{
 				for(j=0;j<size_z;j++)
 				{
-					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(i,n,j), myMaze)==1))
+					if(countNumberOfZerosAroundCell(new Position(i,n,j), myMaze)==1)
 					{
-						myMaze.setValueInPlace(i, n, j, 0);
+						
 						entrance=new Position(i,n,j);
-						numOfEntrancesFound++;
+						return entrance;
 					}
 				}
 
@@ -128,11 +174,11 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			{
 				for(j=0;j<size_y;j++)
 				{
-					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(i,j,n), myMaze)==1))
+					if(countNumberOfZerosAroundCell(new Position(i,j,n), myMaze)==1)
 					{
-						myMaze.setValueInPlace(i, j, n, 0);
+						
 						entrance=new Position(i,j,n);
-						numOfEntrancesFound++;
+						return entrance;
 					}
 				}
 
@@ -144,11 +190,11 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 			{
 				for(j=0;j<size_z;j++)
 				{
-					if((numOfEntrancesFound==0)&&(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1))
+					if(countNumberOfZerosAroundCell(new Position(n,i,j), myMaze)==1)
 					{
-						myMaze.setValueInPlace(n, i, j, 0);
+						
 						entrance=new Position(n,i,j);
-						numOfEntrancesFound++;
+						return entrance;
 					}
 				}
 

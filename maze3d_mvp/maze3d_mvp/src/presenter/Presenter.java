@@ -241,6 +241,15 @@ public class Presenter implements Observer {
 				
 			}
 		});
+		modelCommands.put("load xml", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				Properties p=m.getProperties();
+				ui.showLoadXML(p);
+				
+			}
+		});
 		modelCommands.put("dir", new Command() {
 			
 			@Override

@@ -9,6 +9,7 @@ import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import algorithms.search.State;
+import presenter.Properties;
 
 
 
@@ -225,4 +226,9 @@ public class CLI extends CommonView
 	public void showSolveFrom(String message) {}
 	@Override
 	public void showDisplayHalfSolution(Solution<Position> solution) {}
+	@Override
+	public void showLoadXML(Properties p) {
+		// TODO Auto-generated method stub
+		
+	}
 }

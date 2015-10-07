@@ -12,7 +12,7 @@ public class MazeDisplay extends Canvas
 
 	public MazeDisplay(Composite parent, int style) {
 		super(parent, style);
-
+		
 		//final Color white=new Color(null, 255, 255, 255);
 		//final Color black=new Color(null, 150,150,150);
 	}

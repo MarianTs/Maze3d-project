@@ -14,7 +14,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-
+import boot.Run;
+import presenter.Properties;
+/**
+ * class that generates the connection between the gui and the mvp(model view presenter)
+ * @author Marian
+ *
+ */
 public class GUI extends CommonView 
 {
 	String message;
@@ -23,24 +29,33 @@ public class GUI extends CommonView
 	GenericWindow genericWindow;
 	boolean isSolve;
 	
+	private String path;
+	
+	/**
+	 * constructor 
+	 */
 	public GUI() 
 	{
 		listenerCollection=new HashMap<String,Listener>();
 		message=new String();
 		initListeners();
-		this.mainWindow=new MazeWindow("bla bla",600,400,listenerCollection);
+		this.mainWindow=new MazeWindow("Minion Maze",600,400,listenerCollection);
 		isSolve=false;
 	}
 	
 	
 	
-	
+	/**
+	 * starting the main window
+	 */
 	@Override
 	public void start() {
 		mainWindow.run();
 
 	}
-	
+	/**
+	 * Initialize the listeners that will be sent to the MazeWindow
+	 */
 	public void initListeners()
 	{
 		
@@ -53,7 +68,7 @@ public class GUI extends CommonView
 				 messageBox.setText("Exiting Application");
 				 if(messageBox.open()==SWT.YES)
 				 {
-					 mainWindow.getMazeCanvas().close();
+					 mainWindow.closeCanvas();
 					 message="exit";
 					 setChanged();
 					 notifyObservers();
@@ -78,11 +93,10 @@ public class GUI extends CommonView
 				 fd.setFilterPath("*.xml");
 				 String[] filterExt = {  "*.xml" };
 				 fd.setFilterExtensions(filterExt);
-				 String path = fd.open();
+				 path = fd.open();
 				 message="load xml "+ path;
 				 setChanged();
 				 notifyObservers();
-				 
 
 			 }
 		}); 
@@ -94,6 +108,10 @@ public class GUI extends CommonView
 				genericWindow=new GenericWindow(200,200,listenerCollection,new MazeProperties());
 				genericWindow.run();
 				MazeProperties mp=(MazeProperties)genericWindow.getObj();
+				if(mp==null)
+				{
+					return;
+				}
 				int x=mp.getHeight();
 				int y=mp.getWidth();
 				int z=mp.getDepth();
@@ -103,6 +121,7 @@ public class GUI extends CommonView
 				notifyObservers();
 				mainWindow.setEnableToSolve(true);
 				mainWindow.setEnableToHint(true);
+				mainWindow.setEnableToReset(true);
 				
 			}
 		});
@@ -112,13 +131,16 @@ public class GUI extends CommonView
 			public void handleEvent(Event arg0) 
 			{
 
-				int x=mainWindow.getMazeCanvas().getCharacterPlace().getX();
-				int y=mainWindow.getMazeCanvas().getCharacterPlace().getY();
-				int z=mainWindow.getMazeCanvas().getCharacterPlace().getZ();
+				int x=mainWindow.getCharacterPlace().getX();
+				int y=mainWindow.getCharacterPlace().getY();
+				int z=mainWindow.getCharacterPlace().getZ();
 				message="solve from m "+x+" "+y+" "+z;
 				isSolve=true;
 				setChanged();
 				notifyObservers();
+				
+				//mainWindow.setEnableToExit(false);
+				
 			}
 		});
 		listenerCollection.put("hint", new Listener() {
@@ -126,14 +148,22 @@ public class GUI extends CommonView
 			@Override
 			public void handleEvent(Event arg0) {
 
-				int x=mainWindow.getMazeCanvas().getCharacterPlace().getX();
-				int y=mainWindow.getMazeCanvas().getCharacterPlace().getY();
-				int z=mainWindow.getMazeCanvas().getCharacterPlace().getZ();
+				int x=mainWindow.getCharacterPlace().getX();
+				int y=mainWindow.getCharacterPlace().getY();
+				int z=mainWindow.getCharacterPlace().getZ();
 				message="solve from m "+x+" "+y+" "+z;
 				isSolve=false;
 				setChanged();
 				notifyObservers();
 				
+				
+			}
+		});
+		listenerCollection.put("reset", new Listener() {
+			
+			@Override
+			public void handleEvent(Event arg0) {
+				mainWindow.resetTheCharacterInCanvas();
 				
 			}
 		});
@@ -150,11 +180,7 @@ public class GUI extends CommonView
 	@Override
 	public void showError(String error) 
 	{
-		MessageBox messageBox = new MessageBox(mainWindow.getShell(),  SWT.ICON_ERROR| SWT.OK);
-		messageBox.setMessage(error);
-		messageBox.setText("Error");
-		messageBox.open();
-		
+		mainWindow.showMessageBox(error);
 
 	}
 
@@ -180,7 +206,7 @@ public class GUI extends CommonView
 		{
 			Maze3d maze=new Maze3d(byteArr);
 	
-			mainWindow.setMaze(maze);
+			mainWindow.setMazeInCanvas(maze);
 		}
 		catch (IOException e) 
 		{
@@ -236,9 +262,9 @@ public class GUI extends CommonView
 	}
 
 	@Override
-	public void showExit() {
-		// TODO Auto-generated method stub
-
+	public void showExit() 
+	{
+		mainWindow.close();
 	}
 
 	@Override
@@ -248,22 +274,34 @@ public class GUI extends CommonView
 	}
 	public void showSolveFrom(String message)
 	{
-		//System.out.println("1 "+message);
+
 		this.message="display half solution m";
 		setChanged();
 		notifyObservers();
 	}
 	public void showDisplayHalfSolution(Solution<Position> solution)
 	{
-		
-		mainWindow.getMazeCanvas().setSolution(solution);
 		if(isSolve)
 		{
-			mainWindow.getMazeCanvas().solve();
+			mainWindow.solveInCanvas(solution);
 		}
 		else
 		{
-			mainWindow.getMazeCanvas().hint();
+			mainWindow.hintInCanvas(solution);
+		}
+		
+	}
+
+	@Override
+	public void showLoadXML(Properties p) 
+	{
+		if(p.getTypeOfUserInterfece().intern()=="cli")
+		{
+			mainWindow.closeCanvas();
+			showExit();
+			String[] s=new String[1];
+			s[0]=path;
+			Run.main(s);
 		}
 		
 	}

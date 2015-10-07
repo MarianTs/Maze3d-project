@@ -1,6 +1,7 @@
 package Model;
 
 import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -45,7 +46,7 @@ public class MyModel extends CommonModel
 	private HashMap<String, String> mazeToFile;
 	private HashMap<Maze3d, Solution<Position>> mazeSolutions;
 	private HashMap<String, Maze3d> mazeHalfCollection;
-	private Properties properties;
+	
 	
 	private String errorCode;
 	private String[] dirList;
@@ -57,14 +58,14 @@ public class MyModel extends CommonModel
 	private long fileSize;
 	private String solveMazeCode;
 	private String solveHalfMazeCode;
-	
+	private Properties properties;
 
 	
 
-	public MyModel() 
+	public MyModel(String[] path) 
 	{
 		
-		handleLoadXML(null);//loading the default xml file
+		handleLoadXML(path);//loading the default xml file
 
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeHalfCollection=new HashMap<String,Maze3d>();
@@ -1252,9 +1253,15 @@ public class MyModel extends CommonModel
 	public void handleLoadXML(String[] path)
 	{
 		
+		
+		
 		StringBuilder sb=new StringBuilder();
 		
 		if(path==null)
+		{
+			sb.append("./resources/properties.xml");
+		}
+		if(path.length==0)
 		{
 			sb.append("./resources/properties.xml");
 		}
@@ -1272,21 +1279,26 @@ public class MyModel extends CommonModel
 
 		try
 		{
-			File f=new File("./resources/properties.xml");
+			File f=new File(sb.toString());
 			if(!f.exists())
 			{
-				errorCode="this file doesn't exists";
-				String[] s=new String[1];
-				s[0]="error";
-				setChanged();
-				notifyObservers(s);
-				return;
+				XMLEncoder xmlE = new XMLEncoder(new FileOutputStream(sb.toString()));
+				xmlE.writeObject(new Properties(10, "astar air distance", "prim",5,"gui"));
+				xmlE.close();
 			}
 			XMLDecoder xmlD= new XMLDecoder(new FileInputStream(sb.toString()));
 			properties=(Properties)xmlD.readObject();
 			
 			threadPool = Executors.newFixedThreadPool(properties.getNumberOfThreads());
 			xmlD.close();
+			
+			
+			String[] s=new String[1];
+			s[0]="load xml";
+			setChanged();
+			notifyObservers(s);
+			return;
+			
 		} 
 		catch (FileNotFoundException e) 
 		{
