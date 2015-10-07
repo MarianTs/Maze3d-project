@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
@@ -37,7 +40,7 @@ public class Maze2dDisplay extends MazeDisplay {
 		isStartingPoint=true;
 		characterPlace=new Position();
 		this.gameCharacterPicture=gCharacter;
-		
+		initListeners();
 	}
 
 	public void paintMaze() 
@@ -115,6 +118,75 @@ public class Maze2dDisplay extends MazeDisplay {
 		}
 
 	}
+	public void initListeners()
+	{
+		this.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent arg) 
+			{
+	
+				//arg.doit=true;
+				if(arg.keyCode==SWT.ARROW_RIGHT)
+				{
+					moveRight();
+				}
+				else if(arg.keyCode==SWT.ARROW_LEFT)
+				{
+					moveLeft();
+				}
+				else if(arg.keyCode==SWT.ARROW_UP)
+				{
+					moveUp();
+					
+				}
+				else if(arg.keyCode==SWT.ARROW_DOWN)
+				{
+					moveDown();
+				}
+				else if(arg.keyCode==SWT.PAGE_DOWN)
+				{
+					moveBelow();
+				}
+				else if(arg.keyCode==SWT.PAGE_UP)
+				{
+					moveAbove();
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent arg) 
+			{
+				//arg.doit=true;
+				if(arg.keyCode==SWT.RIGHT)
+				{
+					moveRight();
+				}
+				else if(arg.keyCode==SWT.LEFT)
+				{
+					moveLeft();
+				}
+				else if(arg.keyCode==SWT.UP)
+				{
+					moveUp();
+					
+				}
+				else if(arg.keyCode==SWT.DOWN)
+				{
+					moveDown();
+				}
+				else if((arg.stateMask & SWT.PAGE_DOWN)!=0)
+				{
+					moveBelow();
+				}
+				else if((arg.stateMask & SWT.PAGE_UP)!=0)
+				{
+					moveAbove();
+				}
+				
+			}
+		});
+	}
 	public void setSolution(Solution<Position> solution)
 	{
 		this.solution = solution;
@@ -124,7 +196,7 @@ public class Maze2dDisplay extends MazeDisplay {
 	}
 	public void solve()
 	{
-
+		//timer=new ScheduledThreadPoolExecutor(10);
 		timer=new Timer();
 
 		ArrayList<State<Position>> al=solution.getAL();
@@ -156,6 +228,7 @@ public class Maze2dDisplay extends MazeDisplay {
 
 			}
 		};
+		//timer.scheduleAtFixedRate(timerTask, 0, 500, TimeUnit.MILLISECONDS);
 		timer.scheduleAtFixedRate(timerTask, 0, 500);
 
 	}
@@ -193,7 +266,7 @@ public class Maze2dDisplay extends MazeDisplay {
 	}
 	public void setMaze(Maze3d maze)
 	{
-		System.out.println("5 \n"+maze);
+		
 		this.maze = maze;
 		
 		getDisplay().syncExec(new Runnable() {
@@ -237,7 +310,7 @@ public class Maze2dDisplay extends MazeDisplay {
 		int y=characterPlace.getY();
 		int z=characterPlace.getZ();
 
-		
+		//check the exit!!!!!!
 		if(maze!=null)
 		{
 			int[][][] mazeData=maze.getMaze();
@@ -350,11 +423,20 @@ public class Maze2dDisplay extends MazeDisplay {
 	{
 		if(timerTask!=null)
 		{
-			while(timerTask.cancel()==false);
+			timerTask.cancel();
 		}
 		if(timer!=null)
 		{
 			timer.cancel();
+//			try 
+//			{
+//				while(timer.awaitTermination(10, TimeUnit.SECONDS));
+//			} 
+//			catch (InterruptedException e)
+//			{
+//
+//				e.printStackTrace();
+//			}
 		}
 		
 		

@@ -22,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.ParagraphAction;
-
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
@@ -83,7 +81,7 @@ public class MyModel extends CommonModel
 			if(f.exists())
 			{
 				//loading it compressed
-				ObjectInputStream objectIn = new ObjectInputStream(new GZIPInputStream(new FileInputStream("maze solutions.zip")));
+				ObjectInputStream objectIn = new ObjectInputStream(new GZIPInputStream(new FileInputStream("./resources/maze solutions.zip")));
 				//reading entire object into our maze solution collection
 				mazeSolutions=(HashMap<Maze3d, Solution<Position>>)objectIn.readObject();
 				objectIn.close();
@@ -1258,11 +1256,11 @@ public class MyModel extends CommonModel
 		
 		if(path==null)
 		{
-			sb.append("properties.xml");
+			sb.append("./resources/properties.xml");
 		}
 		else if(path[0].intern()=="null")
 		{
-			sb.append("properties.xml");
+			sb.append("./resources/properties.xml");
 		}
 		else
 		{
@@ -1274,7 +1272,7 @@ public class MyModel extends CommonModel
 
 		try
 		{
-			File f=new File("properties.xml");
+			File f=new File("./resources/properties.xml");
 			if(!f.exists())
 			{
 				errorCode="this file doesn't exists";

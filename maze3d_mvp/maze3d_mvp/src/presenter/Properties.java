@@ -29,7 +29,11 @@ public class Properties implements Serializable {
 		this.typeOfUserInterfece=typeOfUserInterfece;
 	}
 	
-	
+	public Properties() 
+	{
+		super();
+
+	}
 
 	public Properties(Properties p)
 	{
@@ -85,11 +89,7 @@ public class Properties implements Serializable {
 	}
 
 
-	public Properties() 
-	{
-		super();
-
-	}
+	
 
 
 	

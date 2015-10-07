@@ -59,6 +59,7 @@ public class GUI extends CommonView
 					 notifyObservers();
 					 mainWindow.close();
 					 event.doit=true;
+					 
 				 }
 				 else
 				 {
@@ -73,9 +74,9 @@ public class GUI extends CommonView
 			 public void handleEvent(Event event) 
 			 {
 				 FileDialog fd=new FileDialog(mainWindow.getShell(),SWT.OPEN);
-				 fd.setText("open");
-				 fd.setFilterPath(".");
-				 String[] filterExt = {  "*.xml", "*.*" };
+				 fd.setText("xml loader");
+				 fd.setFilterPath("*.xml");
+				 String[] filterExt = {  "*.xml" };
 				 fd.setFilterExtensions(filterExt);
 				 String path = fd.open();
 				 message="load xml "+ path;
@@ -100,8 +101,8 @@ public class GUI extends CommonView
 				message="generate 3d maze m "+x+" "+y+" "+z;
 				setChanged();
 				notifyObservers();
-				mainWindow.setEnableToSolve();
-				mainWindow.setEnableToHint();
+				mainWindow.setEnableToSolve(true);
+				mainWindow.setEnableToHint(true);
 				
 			}
 		});
@@ -152,7 +153,7 @@ public class GUI extends CommonView
 		MessageBox messageBox = new MessageBox(mainWindow.getShell(),  SWT.ICON_ERROR| SWT.OK);
 		messageBox.setMessage(error);
 		messageBox.setText("Error");
-		int response = messageBox.open();
+		messageBox.open();
 		
 
 	}
@@ -254,7 +255,7 @@ public class GUI extends CommonView
 	}
 	public void showDisplayHalfSolution(Solution<Position> solution)
 	{
-		System.out.println("2:"+solution);
+		
 		mainWindow.getMazeCanvas().setSolution(solution);
 		if(isSolve)
 		{

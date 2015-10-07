@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -22,16 +23,25 @@ import algorithms.search.Solution;
 
 public class MazeWindow extends BasicWindow 
 {
+	private Maze2dDisplay mazeCanvas;
+	
+	private Menu menuBar;
+	private Button start;
 	private Button solve;
 	private Button hint;
+	private Button up;
+	private Button down;
+	private Button exit;
+	
+	
+	
 	private Maze3d maze;
 	
-	private Maze2dDisplay mazeCanvas;
+	
 	
 
 	public MazeWindow(String title, int width,int height,HashMap<String, Listener> listenerCollection) {
 		super(title, width, height,listenerCollection);
-		
 		
 	}
 
@@ -42,7 +52,8 @@ public class MazeWindow extends BasicWindow
 		shell.setLayout(new GridLayout(2, false));
 		shell.setText("Super Maze game");
 		
-		Menu menuBar = new Menu(shell, SWT.BAR);
+		//setting the menu bar
+		menuBar = new Menu(shell, SWT.BAR);
         MenuItem cascadeFileMenu = new MenuItem(menuBar, SWT.CASCADE);
         cascadeFileMenu.setText("&File");
         
@@ -52,112 +63,53 @@ public class MazeWindow extends BasicWindow
         MenuItem menuItem = new MenuItem(fileMenu, SWT.PUSH);
         menuItem.setText("&maze configuration");
         shell.setMenuBar(menuBar);
-
+        
 		
         menuItem.addListener(SWT.Selection,listenerCollection.get("file dialog"));
-		
+		//-----
 		
 		//Label label=new Label(mainShell,SWT.HORIZONTAL|SWT.VERTICAL);
 		//label.setText("Please try to solve the maze,\nwith arrow keys:");
 		//label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 
-		
-		Button start=new Button(shell, SWT.PUSH|SWT.BOLD|SWT.CENTER);
+		//start button
+		start=new Button(shell, SWT.PUSH);
 		start.setText("start");
 		start.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		start.addListener(SWT.Selection, listenerCollection.get("start"));
+		//---
 		
+		
+		//canvas with the maze game
 		mazeCanvas=new Maze2dDisplay(shell, SWT.COLOR_DARK_GRAY,new MyGameCharacter());
 		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 6));
+		//----
 		
 		
-		
-		mazeCanvas.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent arg) 
-			{
-	
-				//arg.doit=true;
-				if(arg.keyCode==SWT.ARROW_RIGHT)
-				{
-					mazeCanvas.moveRight();
-				}
-				else if(arg.keyCode==SWT.ARROW_LEFT)
-				{
-					mazeCanvas.moveLeft();
-				}
-				else if(arg.keyCode==SWT.ARROW_UP)
-				{
-					mazeCanvas.moveUp();
-					
-				}
-				else if(arg.keyCode==SWT.ARROW_DOWN)
-				{
-					mazeCanvas.moveDown();
-				}
-				else if(arg.keyCode==SWT.PAGE_DOWN)
-				{
-					mazeCanvas.moveBelow();
-				}
-				else if(arg.keyCode==SWT.PAGE_UP)
-				{
-					mazeCanvas.moveAbove();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent arg) 
-			{
-				//arg.doit=true;
-				if(arg.keyCode==SWT.RIGHT)
-				{
-					mazeCanvas.moveRight();
-				}
-				else if(arg.keyCode==SWT.LEFT)
-				{
-					mazeCanvas.moveLeft();
-				}
-				else if(arg.keyCode==SWT.UP)
-				{
-					mazeCanvas.moveUp();
-					
-				}
-				else if(arg.keyCode==SWT.DOWN)
-				{
-					mazeCanvas.moveDown();
-				}
-				else if((arg.stateMask & SWT.PAGE_DOWN)!=0)
-				{
-					mazeCanvas.moveBelow();
-				}
-				else if((arg.stateMask & SWT.PAGE_UP)!=0)
-				{
-					mazeCanvas.moveAbove();
-				}
-				
-			}
-		});		
-		
+		//solve button
 		solve=new Button(shell, SWT.PUSH);
 		solve.setText("solve");
 		solve.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		solve.setEnabled(false);
 		solve.addListener(SWT.Selection, listenerCollection.get("solve"));
 		
+		
+		//hint button
 		hint=new Button(shell, SWT.PUSH);
 		hint.setText("hint");
 		hint.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		hint.setEnabled(false);
 		hint.addListener(SWT.Selection, listenerCollection.get("hint"));
 		
-		Button up=new Button(shell, SWT.ARROW|SWT.UP);
+		
+		//up button
+		up=new Button(shell, SWT.ARROW|SWT.UP);
 		up.setBackground(new Color(null, 169,245,40));
 		up.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
 
 		
-		
-		Button down=new Button(shell, SWT.ARROW|SWT.DOWN);
+		//down button
+		down=new Button(shell, SWT.ARROW|SWT.DOWN);
 		down.setBackground(new Color(null, 34,105,34));
 		down.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
 		
@@ -186,6 +138,8 @@ public class MazeWindow extends BasicWindow
 			}
 		});
 		
+		
+		//exit button
 		Button exit=new Button(shell, SWT.PUSH);
 		exit.setText("exit");
 		exit.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
@@ -193,6 +147,8 @@ public class MazeWindow extends BasicWindow
 		exit.addListener(SWT.Selection,listenerCollection.get("exit"));
 		shell.addListener(SWT.Close,listenerCollection.get("exit"));
 	}
+	
+	
 	
 	public Maze2dDisplay getMazeCanvas() {
 		return mazeCanvas;
@@ -225,15 +181,41 @@ public class MazeWindow extends BasicWindow
 		shell.dispose();
 		
 		
+		
+		
 	}
-	public void setEnableToSolve()
+	
+	
+	//enabling or disabling buttons
+	public void setEnableToMenuBar(Boolean isEnable)
 	{
-		solve.setEnabled(true);
+		menuBar.setEnabled(isEnable);
 	}
-	public void setEnableToHint()
+	public void setEnableToStart(Boolean isEnable)
 	{
-		hint.setEnabled(true);
+		start.setEnabled(isEnable);
 	}
+	public void setEnableToSolve(Boolean isEnable)
+	{
+		solve.setEnabled(isEnable);
+	}
+	public void setEnableToHint(Boolean isEnable)
+	{
+		hint.setEnabled(isEnable);
+	}
+	public void setEnableToUp(Boolean isEnable)
+	{
+		up.setEnabled(isEnable);
+	}
+	public void setEnableToDown(Boolean isEnable)
+	{
+		down.setEnabled(isEnable);
+	}
+	public void setEnableToExit(Boolean isEnable)
+	{
+		exit.setEnabled(isEnable);
+	}
+	
 	@Override
 	public Shell getShell() 
 	{
