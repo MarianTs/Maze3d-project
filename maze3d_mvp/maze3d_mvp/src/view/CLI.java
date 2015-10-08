@@ -12,7 +12,11 @@ import algorithms.search.State;
 import presenter.Properties;
 
 
-
+/**
+ * defines the  command line interface
+ * @author Marian & Lidor
+ *
+ */
 public class CLI extends CommonView 
 {
 	BufferedReader in;
@@ -20,7 +24,11 @@ public class CLI extends CommonView
 	boolean canBeClosed;
 	String line;
 	
-	
+	/**
+	 * constructor with input and output stream parametrs
+	 * @param in input stream source
+	 * @param out output stream source
+	 */
 	public CLI(BufferedReader in, PrintWriter out) 
 	{
 		this.in=in;
@@ -28,6 +36,9 @@ public class CLI extends CommonView
 		this.canBeClosed=false;
 		this.line=new String();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void start() 
 	{
@@ -61,16 +72,24 @@ public class CLI extends CommonView
 		}).start();
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getUserCommand()
 	{
 		return line;
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showError(String error)
 	{
 		out.println(error);
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDirPath(String[] list)
 	{
 		out.println("The files and directories in this folder are:");
@@ -81,11 +100,17 @@ public class CLI extends CommonView
 			out.flush();
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showGenerate3dMaze(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplayName(byte[] byteArr)
 	{
 		try {
@@ -132,7 +157,9 @@ public class CLI extends CommonView
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplayCrossSectionBy(int[][] crossSection)
 	{
 		for(int[] a:crossSection)
@@ -145,35 +172,49 @@ public class CLI extends CommonView
 		}
 		out.flush();
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showSaveMaze(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showLoadMaze(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showMazeSize(int size)
 	{
 		out.println("The size of the maze is: "+ size);
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showFileSize(long size)
 	{
 		out.println("The size of the maze inside the file is: "+ size);
 		out.flush();
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showSolveMaze(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplaySolution(Solution<Position> solution)
 	{
 		ArrayList<State<Position>> al=solution.getAL();
@@ -196,13 +237,18 @@ public class CLI extends CommonView
 	
 	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showExit()
 	{
 		canBeClosed=true;
 		out.println("Bye bye!");
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showHelp()
 	{
 		
@@ -222,13 +268,19 @@ public class CLI extends CommonView
 		out.println("<> -You have to write the requested string inside,{} -choose one of the fallwing and write inside the brackets");
 		out.flush();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showSolveFrom(String message) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDisplayHalfSolution(Solution<Position> solution) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showLoadXML(Properties p) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void showLoadXML(Properties p) {}
 }

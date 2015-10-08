@@ -6,7 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import presenter.Properties;
-
+/**
+ * constructing an xml file to load properties
+ * @author Marian
+ *
+ */
 public class RunProperties {
 
 	public static void main(String[] args) 

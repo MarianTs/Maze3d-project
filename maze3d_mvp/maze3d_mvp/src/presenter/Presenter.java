@@ -11,7 +11,11 @@ import Model.Model;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
 import view.View;
-
+/**
+ * defines the functionality of the presenter class
+ * @author Marian & Lidor
+ *
+ */
 public class Presenter implements Observer {
 	
 	Model m;
@@ -20,7 +24,12 @@ public class Presenter implements Observer {
 	HashMap<String,Command> modelCommands;
 	//i use ordered hash map,in order to check my strings easily
 	
-	
+	/**
+	 * constructor using fields,
+	 * model and view that interact with the presenter
+	 * @param m model
+	 * @param ui user interface(view)
+	 */
 	public Presenter(Model m,View ui) 
 	{
 		
@@ -30,10 +39,14 @@ public class Presenter implements Observer {
 		modelCommands=new HashMap<String,Command>();
 		initCommands();
 	}
-	
+	/**
+	 * in the moment that one of the observervables had changed,
+	 * it calls this function to update the observer(the presenter)
+	 */
 	@Override
 	public void update(Observable o, Object arg)
 	{
+		//if the update is from the view
 		if(o == ui) 
 		{
 			Command command;
@@ -67,6 +80,7 @@ public class Presenter implements Observer {
 			command.doCommand(null);
 
 		}
+		//if the update is from the model
 		else if(o == m) 
 		{
 			Command command;
@@ -90,6 +104,10 @@ public class Presenter implements Observer {
 
 
 	}
+	/**
+	 * initialize the commands that came from the view or from the model
+	 * whenever some thing happen the presenter decides what to do with the command it got,according to its name and parameters.
+	 */
 	protected void initCommands() 
 	{
 		//commands that came from view

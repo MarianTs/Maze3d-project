@@ -170,26 +170,34 @@ public class GUI extends CommonView
 		
 		
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getUserCommand() 
 	{
 		return message;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showError(String error) 
 	{
 		mainWindow.showMessageBox(error);
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDirPath(String[] list) {
 		// TODO Auto-generated method stub
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showGenerate3dMaze(String message) 
 	{
@@ -199,7 +207,9 @@ public class GUI extends CommonView
 		setChanged();
 		notifyObservers();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showDisplayName(byte[] byteArr) {
 		try 
@@ -216,62 +226,57 @@ public class GUI extends CommonView
 		
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showDisplayCrossSectionBy(int[][] crossSection) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void showDisplayCrossSectionBy(int[][] crossSection) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showSaveMaze(String message) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void showSaveMaze(String message) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showLoadMaze(String message) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void showLoadMaze(String message) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showMazeSize(int size) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void showMazeSize(int size) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showFileSize(long size) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void showFileSize(long size) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showSolveMaze(String message)
-	{
-		
-
-	}
-
+	public void showSolveMaze(String message){}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showDisplaySolution(Solution<Position> solution) 
-	{
-		
-		
-	}
-
+	public void showDisplaySolution(Solution<Position> solution) {}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showExit() 
 	{
 		mainWindow.close();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void showHelp() {
-		// TODO Auto-generated method stub
-
-	}
+	public void showHelp() {}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showSolveFrom(String message)
 	{
 
@@ -279,6 +284,9 @@ public class GUI extends CommonView
 		setChanged();
 		notifyObservers();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showDisplayHalfSolution(Solution<Position> solution)
 	{
 		if(isSolve)
@@ -291,7 +299,9 @@ public class GUI extends CommonView
 		}
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void showLoadXML(Properties p) 
 	{

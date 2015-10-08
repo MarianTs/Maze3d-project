@@ -16,7 +16,11 @@ import view.CLI;
 import view.CommonView;
 import view.GUI;
 
-
+/**
+ * main that runs the mvp architecture,according to parameters it got from the xml file
+ * @author Marian & Lidor
+ *
+ */
 public class Run {
 
 	public static void main(String[] args) {

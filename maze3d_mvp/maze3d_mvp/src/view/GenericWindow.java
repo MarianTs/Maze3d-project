@@ -21,11 +21,21 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
+/**
+ * a class that gets any type of object,show its fields in window,and after the client entered some text fill the object accordingly
+ * @author Marian & Lidor
+ *
+ */
 public class GenericWindow extends BasicWindow 
 {
 	Object obj;
-
+	/**
+	 * constructor using fields
+	 * @param width the width of the window
+	 * @param height the height of the window
+	 * @param listenerCollection listener collection of the window
+	 * @param obj the object to fill
+	 */
 	public GenericWindow( int width, int height,HashMap<String, Listener> listenerCollection,Object obj) 
 	{
 		super(obj.getClass().getName(), width, height,listenerCollection);
@@ -33,7 +43,9 @@ public class GenericWindow extends BasicWindow
  		initWidgets();
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	void initWidgets() 
 	{
@@ -155,7 +167,10 @@ public class GenericWindow extends BasicWindow
 		shell.pack();
 
 	}
-
+	/**
+	 * showing errors in message box
+	 * @param e exception to show
+	 */
 	public void showMessageBox(Exception e)
 	{
 		MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
@@ -163,7 +178,9 @@ public class GenericWindow extends BasicWindow
 		messageBox.setText("Error");
 		messageBox.open();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void close() 
 	{
@@ -171,11 +188,16 @@ public class GenericWindow extends BasicWindow
 		shell.dispose();
 
 	}
-
+	/**
+	 * returning an object of the fields that was written by the client
+	 * @return object with filled data members(only members that has setters)
+	 */
 	public Object getObj() {
 		return obj;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Shell getShell() {
 

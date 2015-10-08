@@ -5,8 +5,6 @@ import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -20,7 +18,11 @@ import org.eclipse.swt.widgets.Shell;
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
 import algorithms.search.Solution;
-
+/**
+ * generating the main window
+ * @author Marian & Lidor
+ *
+ */
 public class MazeWindow extends BasicWindow 
 {
 	private Maze2dDisplay mazeCanvas;
@@ -34,16 +36,25 @@ public class MazeWindow extends BasicWindow
 	private Button reset;
 	private Button exit;
 	
-
+	private Position characterPosition;
+	private Maze3d maze;
 	
-
+	/**
+	 * constructor using fields
+	 * @param title the title of the window
+	 * @param width the width of the window
+	 * @param height the height of the window
+	 * @param listenerCollection listener collection of the window
+	 */
 	public MazeWindow(String title, int width,int height,HashMap<String, Listener> listenerCollection) {
 		super(title, width, height,listenerCollection);
  		initWidgets();
  		mazeCanvas.setUpButton(up);
 		mazeCanvas.setDownButton(down);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	void initWidgets() {
 		//Image im=new Image(display, "pics/hot_air_ballon.jpg");
@@ -200,8 +211,20 @@ public class MazeWindow extends BasicWindow
 	
 	
 	
+	//setters
+	public void setCharacterPosition(Position characterPosition) {
+		this.characterPosition = characterPosition;
+	}
+	public void setMaze(Maze3d maze) {
+		this.maze = maze;
+	}
+	
+	
 
-
+	/**
+	 * setting the game board
+	 * @param mazeCanvas a canvas with the game board
+	 */
 	public void setMazeCanvas(Maze2dDisplay mazeCanvas) {
 		this.mazeCanvas = mazeCanvas;
 	}
@@ -212,11 +235,20 @@ public class MazeWindow extends BasicWindow
 	
 	
 	//method that passes information to canvas
+	/**
+	 * Passing maze to the game board(mazeCanvas)
+	 * @param maze maze to pass
+	 */
 	public void setMazeInCanvas(Maze3d maze) 
 	{
 
 		mazeCanvas.setMaze(maze);
+		
 	}
+	/**
+	 * asking the canvas to solve the game
+	 * @param solution
+	 */
 	public void solveInCanvas(Solution<Position> solution)
 	{
 		mazeCanvas.solve(solution);

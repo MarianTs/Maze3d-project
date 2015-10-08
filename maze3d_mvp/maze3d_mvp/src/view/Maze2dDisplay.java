@@ -55,7 +55,7 @@ public class Maze2dDisplay extends MazeDisplay {
 
 
 					e.gc.setForeground(new Color(null, 0, 0, 0));
-					e.gc.setBackground(new Color(null, 75,	0	,130));
+					e.gc.setBackground(new Color(null, 24,	116	,205));
 
 					int[][][] mazeData = maze.getMaze();
 
@@ -144,10 +144,16 @@ public class Maze2dDisplay extends MazeDisplay {
 					int y=p.getY();
 					int z=p.getZ();
 					characterPlace.setXYZ(x, y, z);
+					if(isDisposed())
+					{
+						return;
+					}
 					getDisplay().syncExec(new Runnable() {
 						
 						@Override
-						public void run() {
+						public void run() 
+						{
+							
 							redraw();
 							
 						}
@@ -157,7 +163,7 @@ public class Maze2dDisplay extends MazeDisplay {
 						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 				}
 				
