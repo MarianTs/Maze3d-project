@@ -483,7 +483,9 @@ public class MyModel extends CommonModel {
 			}
 		});
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplaySolution(String[] paramarray)
 	{
 		if(paramarray.length!=1)

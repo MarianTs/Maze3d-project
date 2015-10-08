@@ -3,9 +3,10 @@ package view;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,8 +17,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 import algorithms.mazeGenerators.Maze3d;
-import algorithms.mazeGenerators.Position;
-import algorithms.search.Solution;
 /**
  * generating the main window
  * @author Marian & Lidor
@@ -36,8 +35,9 @@ public class MazeWindow extends BasicWindow
 	private Button reset;
 	private Button exit;
 	
-	private Position characterPosition;
-	private Maze3d maze;
+//	private Position characterPosition;
+//	private Maze3d maze;
+	private KeyListener arrowKeyListener;//I didn't succeded to pass key listener in the listenerCollection
 	
 	/**
 	 * constructor using fields
@@ -46,11 +46,12 @@ public class MazeWindow extends BasicWindow
 	 * @param height the height of the window
 	 * @param listenerCollection listener collection of the window
 	 */
-	public MazeWindow(String title, int width,int height,HashMap<String, Listener> listenerCollection) {
+	public MazeWindow(String title, int width,int height,HashMap<String, Listener> listenerCollection,KeyListener arrowKeyListener) {
 		super(title, width, height,listenerCollection);
+		this.arrowKeyListener=arrowKeyListener;
  		initWidgets();
- 		mazeCanvas.setUpButton(up);
-		mazeCanvas.setDownButton(down);
+ 		
+
 	}
 	/**
 	 * {@inheritDoc}
@@ -93,50 +94,10 @@ public class MazeWindow extends BasicWindow
 		
 		//canvas with the maze game
 		mazeCanvas=new Maze2dDisplay(shell, SWT.NONE,new MyGameCharacter());
-		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 6));
-		
-		mazeCanvas.addKeyListener(new KeyListener() 
-		{
-			
-			@Override
-			public void keyReleased(KeyEvent arg) {
-				//arg.doit=true;
-				if(arg.keyCode==SWT.ARROW_RIGHT)
-				{
-					mazeCanvas.moveRight();
-				}
-				else if(arg.keyCode==SWT.ARROW_LEFT)
-				{
-					mazeCanvas.moveLeft();
-				}
-				else if(arg.keyCode==SWT.ARROW_UP)
-				{
-					mazeCanvas.moveUp();
-					
-				}
-				else if(arg.keyCode==SWT.ARROW_DOWN)
-				{
-					mazeCanvas.moveDown();
-				}
-				else if(arg.keyCode==SWT.PAGE_DOWN)
-				{
-					mazeCanvas.moveBelow();
-				}
-				else if(arg.keyCode==SWT.PAGE_UP)
-				{
-					mazeCanvas.moveAbove();
-				}
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent arg) 
-			{
+		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,10));
 
-				
-			}
-		});
-		
+		mazeCanvas.addKeyListener(arrowKeyListener);
+
 		//----
 		
 		
@@ -144,7 +105,7 @@ public class MazeWindow extends BasicWindow
 		solve=new Button(shell, SWT.PUSH);
 		solve.setText("solve");
 		solve.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
-		setEnableToSolve(false);
+		solve.setEnabled(false);
 		solve.addListener(SWT.Selection, listenerCollection.get("solve"));
 		
 		
@@ -152,7 +113,7 @@ public class MazeWindow extends BasicWindow
 		hint=new Button(shell, SWT.PUSH);
 		hint.setText("hint");
 		hint.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
-		setEnableToHint(false);
+		hint.setEnabled(false);
 		hint.addListener(SWT.Selection, listenerCollection.get("hint"));
 		
 		//reset button
@@ -160,46 +121,25 @@ public class MazeWindow extends BasicWindow
 		reset.setText("reset");
 		reset.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 		reset.addListener(SWT.Selection,listenerCollection.get("reset"));
-		setEnableToReset(false);
+		reset.setEnabled(false);
 		
 		//up button
 		up=new Button(shell, SWT.ARROW|SWT.UP);
 		up.setBackground(new Color(null, 169,245,40));
 		up.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
-		setEnableToUp(false);
+		up.setEnabled(false);
 		
 		//down button
 		down=new Button(shell, SWT.ARROW|SWT.DOWN);
 		down.setBackground(new Color(null, 34,105,34));
 		down.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
-		setEnableToDown(false);
+		down.setEnabled(false);
 		
-		
-		
-//		mazeCanvas.addPaintListener(new PaintListener() {
-//			
-//			@Override
-//			public void paintControl(PaintEvent arg0) {
-//				if(mazeCanvas.canBeMovedUp())
-//				{
-//					up.setEnabled(true);
-//				}
-//				else
-//				{
-//					up.setEnabled(false);
-//				}
-//				if(mazeCanvas.canBeMovedDown())
-//				{
-//					down.setEnabled(true);
-//				}
-//				else
-//				{
-//					down.setEnabled(false);
-//				}
-//			}
-//		});
-		
-		
+//		Image im=new Image(display, "./resources/minion_banana_skiny.png");
+//		CLabel label=new CLabel(shell, SWT.NONE);
+//		label.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,3));
+//		label.setImage(im);
+
 		//exit button
 		Button exit=new Button(shell, SWT.PUSH);
 		exit.setText("exit");
@@ -210,31 +150,61 @@ public class MazeWindow extends BasicWindow
 	}
 	
 	
+
 	
-	//setters
-	public void setCharacterPosition(Position characterPosition) {
-		this.characterPosition = characterPosition;
-	}
-	public void setMaze(Maze3d maze) {
-		this.maze = maze;
-	}
 	
 	
 
-	/**
-	 * setting the game board
-	 * @param mazeCanvas a canvas with the game board
-	 */
-	public void setMazeCanvas(Maze2dDisplay mazeCanvas) {
-		this.mazeCanvas = mazeCanvas;
-	}
+	
 
-//	public Maze3d getMaze() {
-//		return maze;
-//	}
-	
-	
 	//method that passes information to canvas
+	public void moveCharacterInCanvas(int x, int y,int z,Boolean canBeMovedUp,Boolean canBeMovedDown,Boolean isStart)
+	{
+		
+		display.syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if(down!=null)
+				{
+					down.setEnabled(canBeMovedDown);
+				}
+
+			}
+		});
+
+
+		display.syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if(up!=null)
+				{
+					up.setEnabled(canBeMovedUp);
+				}
+
+
+			}
+		});
+		if(isStart)
+		{
+			display.syncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					solve.setEnabled(true);
+					hint.setEnabled(true);
+					reset.setEnabled(true);
+					
+				}
+			});
+			
+			
+		}
+		mazeCanvas.setCharacterInPlace(x,y,z);
+		
+	}
+	
 	/**
 	 * Passing maze to the game board(mazeCanvas)
 	 * @param maze maze to pass
@@ -245,18 +215,8 @@ public class MazeWindow extends BasicWindow
 		mazeCanvas.setMaze(maze);
 		
 	}
-	/**
-	 * asking the canvas to solve the game
-	 * @param solution
-	 */
-	public void solveInCanvas(Solution<Position> solution)
-	{
-		mazeCanvas.solve(solution);
-	}
-	public void hintInCanvas(Solution<Position> solution)
-	{
-		mazeCanvas.hint(solution);
-	}
+
+
 	
 	public void showMessageBox(String error)
 	{
@@ -265,14 +225,8 @@ public class MazeWindow extends BasicWindow
 		messageBox.setText("Error");
 		messageBox.open();
 	}
-	public void resetTheCharacterInCanvas()
-	{
-		mazeCanvas.reset();
-	}
-	public void closeCanvas()
-	{
-		mazeCanvas.close();
-	}
+
+	
 	
 	//--------------------
 	
@@ -280,78 +234,75 @@ public class MazeWindow extends BasicWindow
 	
 	public void close()
 	{
-		//mazeCanvas.close();
+		
 		shell.dispose();
 
 	}
-	public Position getCharacterPlace()
-	{
-		return mazeCanvas.getCharacterPlace();
-	}
+
 	
 	
 	
-	//enabling or disabling buttons
-	public void setEnableToReset(Boolean isEnable)
-	{
-		reset.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the menuBar button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToMenuBar(Boolean isEnable)
-	{
-		menuBar.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "start new game" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToStart(Boolean isEnable)
-	{
-		start.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "solve" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToSolve(Boolean isEnable)
-	{
-		solve.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "hint" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToHint(Boolean isEnable)
-	{
-		hint.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "up" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToUp(Boolean isEnable)
-	{
-		up.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "down" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToDown(Boolean isEnable)
-	{
-		down.setEnabled(isEnable);
-	}
-	/**
-	 * enabling or disabling the "exit" button
-	 * @param isEnable true-to enable,false-to disable
-	 */
-	public void setEnableToExit(Boolean isEnable)
-	{
-		exit.setEnabled(isEnable);
-	}
+//	//enabling or disabling buttons
+//	public void setEnableToReset(Boolean isEnable)
+//	{
+//		reset.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the menuBar button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToMenuBar(Boolean isEnable)
+//	{
+//		menuBar.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "start new game" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToStart(Boolean isEnable)
+//	{
+//		start.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "solve" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToSolve(Boolean isEnable)
+//	{
+//		solve.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "hint" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToHint(Boolean isEnable)
+//	{
+//		hint.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "up" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToUp(Boolean isEnable)
+//	{
+//		up.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "down" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToDown(Boolean isEnable)
+//	{
+//		down.setEnabled(isEnable);
+//	}
+//	/**
+//	 * enabling or disabling the "exit" button
+//	 * @param isEnable true-to enable,false-to disable
+//	 */
+//	public void setEnableToExit(Boolean isEnable)
+//	{
+//		exit.setEnabled(isEnable);
+//	}
 	
 	
 	@Override
