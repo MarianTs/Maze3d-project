@@ -8,7 +8,11 @@ import org.eclipse.swt.widgets.Composite;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Position;
-
+/**
+ * constructing a widget that display the game board
+ * @author Marian & Lidor
+ *
+ */
 public class Maze2dDisplay extends MazeDisplay {
 
 	private Position characterPlace;
@@ -17,7 +21,13 @@ public class Maze2dDisplay extends MazeDisplay {
 	private Image start_im;//the image of the starting point
 	private Image end_im;//the image of the ending point
 	private Image prize_im;//the image that you grt when you win
-
+	
+	/**
+	 * constructor using fields
+	 * @param parent the parent of the widget
+	 * @param style style of the widget
+	 * @param characterPic a class that contain the painting of the character
+	 */
 	public Maze2dDisplay(Composite parent, int style,MyGameCharacter characterPic) 
 	{
 		super(parent, style);
@@ -28,7 +38,9 @@ public class Maze2dDisplay extends MazeDisplay {
 		start_im = new Image(getDisplay(), "./resources/start.jpeg");
 		prize_im=new Image(getDisplay(), "./resources/FotorCreated.jpg");
 	}
-
+	/**
+	 * defines the listener that paint the maze
+	 */
 	public void paintMaze() 
 	{
 
@@ -36,7 +48,10 @@ public class Maze2dDisplay extends MazeDisplay {
 
 			@Override
 			public void paintControl(PaintEvent e) {
-
+				if(getDisplay().isDisposed())
+				{
+					return;
+				}
 				if(maze!=null)
 				{
 
@@ -111,7 +126,10 @@ public class Maze2dDisplay extends MazeDisplay {
 	}
 	
 
-
+	/**
+	 * setting the maze which we will draw
+	 * @param maze object of maze(containing the 3d array,start position,goal position,and sizes)
+	 */
 	public void setMaze(Maze3d maze)
 	{
 		//only here I got maze
@@ -119,6 +137,12 @@ public class Maze2dDisplay extends MazeDisplay {
 		
 		
 	}
+	/**
+	 * setting character in specified cell
+	 * @param x x axis of the cell
+	 * @param y y axis of the cell
+	 * @param z z axis of the cell
+	 */
 	public void setCharacterInPlace(int x,int y,int z)
 	{
 		//here i got the position,if the maze and the position is exists ,i draw on the canvas

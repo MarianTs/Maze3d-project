@@ -78,6 +78,7 @@ public abstract class BasicWindow
 			    }
 
 			 } // shell is disposed
+			 
 			 if(displayCanBeDisposed==true)
 			 {
 				 display.dispose();

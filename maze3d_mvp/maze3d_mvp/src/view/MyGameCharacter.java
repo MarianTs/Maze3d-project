@@ -2,13 +2,24 @@ package view;
 
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
-
+/**
+ * defines how the character will look
+ * @author Marian & Lidor
+ *
+ */
 public class MyGameCharacter implements GameCharacter {
 
 
 	
-
 	
+	/**
+	 * paint the character
+	 * @param PaintEvent e the paint event that invoke the painting
+	 * @param x the x axis to paint the character
+	 * @param y the x axis to paint the character
+	 * @param width the width of the character
+	 * @param height the height of the character
+	 */
 	public void paint(PaintEvent e,int x,int y, int width, int height) 
 	{
 		//e.gc.setForeground(new Color(null,34, 156, 34));

@@ -3,10 +3,8 @@ package view;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,9 +33,10 @@ public class MazeWindow extends BasicWindow
 	private Button reset;
 	private Button exit;
 	
-//	private Position characterPosition;
-//	private Maze3d maze;
-	private KeyListener arrowKeyListener;//I didn't succeded to pass key listener in the listenerCollection
+	private boolean isDisposed;//checking if shell is disposed,in order to close window properly
+	
+
+	private KeyListener arrowKeyListener;//I didn't succeded to pass key listener in the listenerCollection,so i passed it alone
 	
 	/**
 	 * constructor using fields
@@ -158,7 +157,17 @@ public class MazeWindow extends BasicWindow
 	
 
 	//method that passes information to canvas
-	public void moveCharacterInCanvas(int x, int y,int z,Boolean canBeMovedUp,Boolean canBeMovedDown,Boolean isStart)
+	/**
+	 * move the character in the canvas,and then draw it on the canvas
+	 * @param x the x axis of the position that the character move to
+	 * @param y the y axis of the position that the character move to
+	 * @param z the z axis of the position that the character move to
+	 * @param canBeMovedUp if in the new position there is an option to move up
+	 * @param canBeMovedDown if in the new position there is an option to move down
+	 * @param isStart if start was pressed
+	 * @param isSolvingNow if now the character is moving in the maze
+	 */
+	public void moveCharacterInCanvas(int x, int y,int z,Boolean canBeMovedUp,Boolean canBeMovedDown,Boolean isStart,Boolean isSolvingNow)
 	{
 		
 		display.syncExec(new Runnable() {
@@ -201,6 +210,20 @@ public class MazeWindow extends BasicWindow
 			
 			
 		}
+		
+		display.syncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				solve.setEnabled(!isSolvingNow);
+				hint.setEnabled(!isSolvingNow);
+				reset.setEnabled(!isSolvingNow);
+				menuBar.setEnabled(!isSolvingNow);
+				//exit.setEnabled(false);
+
+			}
+		});
+		
 		mazeCanvas.setCharacterInPlace(x,y,z);
 		
 	}
@@ -217,7 +240,10 @@ public class MazeWindow extends BasicWindow
 	}
 
 
-	
+	/**
+	 * showing a message box with error specified
+	 * @param error the text of the message box
+	 */
 	public void showMessageBox(String error)
 	{
 		MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
@@ -231,80 +257,28 @@ public class MazeWindow extends BasicWindow
 	//--------------------
 	
 	
-	
+	/**
+	 * closing the main window
+	 */
 	public void close()
 	{
-		
+		isDisposed = true;
 		shell.dispose();
+		
 
 	}
-
-	
-	
-	
-//	//enabling or disabling buttons
-//	public void setEnableToReset(Boolean isEnable)
-//	{
-//		reset.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the menuBar button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToMenuBar(Boolean isEnable)
-//	{
-//		menuBar.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "start new game" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToStart(Boolean isEnable)
-//	{
-//		start.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "solve" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToSolve(Boolean isEnable)
-//	{
-//		solve.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "hint" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToHint(Boolean isEnable)
-//	{
-//		hint.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "up" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToUp(Boolean isEnable)
-//	{
-//		up.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "down" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToDown(Boolean isEnable)
-//	{
-//		down.setEnabled(isEnable);
-//	}
-//	/**
-//	 * enabling or disabling the "exit" button
-//	 * @param isEnable true-to enable,false-to disable
-//	 */
-//	public void setEnableToExit(Boolean isEnable)
-//	{
-//		exit.setEnabled(isEnable);
-//	}
-	
-	
+	/**
+	 * checks if the window was disposed
+	 * @return true-if disposed,false-if not disposed
+	 */
+	public boolean IsDisposed()
+	{
+		return isDisposed;
+	}
+	/**
+	 * getting the shell
+	 * @return shell shell
+	 */
 	@Override
 	public Shell getShell() 
 	{

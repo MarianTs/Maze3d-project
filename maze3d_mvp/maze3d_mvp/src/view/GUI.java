@@ -38,6 +38,7 @@ public class GUI extends CommonView
 	KeyListener canvasArrowKeyListener;
 	
 	private String path;
+	private Boolean isSolvingNow;
 	
 	/**
 	 * constructor 
@@ -49,6 +50,8 @@ public class GUI extends CommonView
 		initListeners();
 		this.mainWindow=new MazeWindow("Minion Maze",600,400,listenerCollection,canvasArrowKeyListener);
 		isSolve=false;
+		this.isSolvingNow=false;
+		
 	}
 	
 	
@@ -76,18 +79,19 @@ public class GUI extends CommonView
 				 messageBox.setText("Exiting Application");
 				 if(messageBox.open()==SWT.YES)
 				 {
-					 if((thread!=null)&&(!thread.isInterrupted()))
-					 {
-						 thread.interrupt();
-					 }
+//					 if((thread!=null)&&(!thread.isInterrupted()))
+//					 {
+//						 thread.interrupt();
+//					 }
 					 
 					 
 					 message="exit";
 					 setChanged();
 					 notifyObservers();
-					 mainWindow.close();
-					 event.doit=true;
 					 
+					 
+					 event.doit=true;
+					 //mainWindow.close();
 				 }
 				 else
 				 {
@@ -102,6 +106,10 @@ public class GUI extends CommonView
 		{
 			 public void handleEvent(Event event) 
 			 {
+//				 if((thread!=null)&&(!thread.isInterrupted()))
+//				 {
+//					 thread.interrupt();
+//				 }
 				 FileDialog fd=new FileDialog(mainWindow.getShell(),SWT.OPEN);
 				 fd.setText("xml loader");
 				 fd.setFilterPath("*.xml");
@@ -118,6 +126,10 @@ public class GUI extends CommonView
 			
 			@Override
 			public void handleEvent(Event arg0) {
+//				if((thread!=null)&&(!thread.isInterrupted()))
+//				 {
+//					 thread.interrupt();
+//				 }
 				
 				genericWindow=new GenericWindow(200,200,listenerCollection,new MazeProperties());
 				genericWindow.run();
@@ -131,11 +143,10 @@ public class GUI extends CommonView
 				int z=mp.getDepth();
 				
 				message="generate 3d maze m "+x+" "+y+" "+z;
+				
 				setChanged();
 				notifyObservers();
-//				mainWindow.setEnableToSolve(true);
-//				mainWindow.setEnableToHint(true);
-//				mainWindow.setEnableToReset(true);
+				
 				
 			}
 		});
@@ -144,23 +155,25 @@ public class GUI extends CommonView
 			@Override
 			public void handleEvent(Event arg0) 
 			{
-
+				isSolvingNow=true;
 				int x=characterPlace.getX();
 				int y=characterPlace.getY();
 				int z=characterPlace.getZ();
 				message="solve from m "+x+" "+y+" "+z;
 				isSolve=true;
+
 				setChanged();
 				notifyObservers();
 				
-				//mainWindow.setEnableToExit(false);
+
 				
 			}
 		});
 		listenerCollection.put("hint", new Listener() {
 			
 			@Override
-			public void handleEvent(Event arg0) {
+			public void handleEvent(Event arg0) 
+			{
 
 				int x=characterPlace.getX();
 				int y=characterPlace.getY();
@@ -178,12 +191,9 @@ public class GUI extends CommonView
 			@Override
 			public void handleEvent(Event arg0) 
 			{
-				if((thread!=null)&&(thread.isInterrupted()==false))
-				{
-					thread.interrupt();
-				}
+				
 				characterPlace.setXYZ(maze.getStartPosition().getX(), maze.getStartPosition().getY(), maze.getStartPosition().getZ());
-				mainWindow.moveCharacterInCanvas(maze.getStartPosition().getX(), maze.getStartPosition().getY(), maze.getStartPosition().getZ(),canBeMovedUp(),canBeMovedDown(),false);
+				mainWindow.moveCharacterInCanvas(maze.getStartPosition().getX(), maze.getStartPosition().getY(), maze.getStartPosition().getZ(),canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 				
 			}
 		});
@@ -192,6 +202,10 @@ public class GUI extends CommonView
 			@Override
 			public void keyReleased(KeyEvent arg) 
 			{
+				if(isSolvingNow)
+				{
+					return;
+				}
 				int x=characterPlace.getX();
 				int y=characterPlace.getY();
 				int z=characterPlace.getZ();
@@ -202,7 +216,7 @@ public class GUI extends CommonView
 					if((z<mazeArr[0][0].length-1)&&(mazeArr[x][y][z+1]==0))
 					{
 						characterPlace.setXYZ(x, y, z+1);
-						mainWindow.moveCharacterInCanvas(x, y, z+1,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x, y, z+1,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
 				else if(arg.keyCode==SWT.ARROW_LEFT)
@@ -210,7 +224,7 @@ public class GUI extends CommonView
 					if((z>0)&&(mazeArr[x][y][z-1]==0))
 					{
 						characterPlace.setXYZ(x, y, z-1);
-						mainWindow.moveCharacterInCanvas(x, y, z-1,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x, y, z-1,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
 				else if(arg.keyCode==SWT.ARROW_UP)
@@ -218,7 +232,7 @@ public class GUI extends CommonView
 					if((y>0)&&(mazeArr[x][y-1][z]==0))
 					{
 						characterPlace.setXYZ(x, y-1, z);
-						mainWindow.moveCharacterInCanvas(x, y-1, z,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x, y-1, z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 
 				}
@@ -227,7 +241,7 @@ public class GUI extends CommonView
 					if((y<mazeArr[0].length-1)&&(mazeArr[x][y+1][z]==0))
 					{
 						characterPlace.setXYZ(x, y+1, z);
-						mainWindow.moveCharacterInCanvas(x, y+1, z,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x, y+1, z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
 				else if(arg.keyCode==SWT.PAGE_DOWN)
@@ -235,7 +249,7 @@ public class GUI extends CommonView
 					if((x>0)&&(mazeArr[x-1][y][z]==0))
 					{
 						characterPlace.setXYZ(x-1, y, z);
-						mainWindow.moveCharacterInCanvas(x-1, y, z,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x-1, y, z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
 				else if(arg.keyCode==SWT.PAGE_UP)
@@ -243,21 +257,20 @@ public class GUI extends CommonView
 					if((x<mazeArr.length-1)&&(mazeArr[x+1][y][z]==0))
 					{
 						characterPlace.setXYZ(x+1, y, z);
-						mainWindow.moveCharacterInCanvas(x+1, y, z,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x+1, y, z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
 				
 			}
 			
 			@Override
-			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyPressed(KeyEvent arg0) {}
 		};
 	}
-	
-	
+	/**
+	 * checking if in the current position of the character,it can move down in the floors
+	 * @return true-if can move down,false-if can't
+	 */
 	public boolean canBeMovedDown()
 	{
 		int x=characterPlace.getX();
@@ -287,6 +300,10 @@ public class GUI extends CommonView
 		}
 		
 	}
+	/**
+	 * checking if in the current position of the character,it can move up in the floors
+	 * @return true-if can move up,false-if can't
+	 */
 	public boolean canBeMovedUp()
 	{
 		int x=characterPlace.getX();
@@ -363,7 +380,7 @@ public class GUI extends CommonView
 			maze=new Maze3d(byteArr);
 			characterPlace=new Position(maze.getStartPosition().getX(),maze.getStartPosition().getY(),maze.getStartPosition().getZ());
 			mainWindow.setMazeInCanvas(maze);
-			mainWindow.moveCharacterInCanvas(maze.getStartPosition().getX(),maze.getStartPosition().getY(),maze.getStartPosition().getZ(),canBeMovedUp(),canBeMovedDown(),true);
+			mainWindow.moveCharacterInCanvas(maze.getStartPosition().getX(),maze.getStartPosition().getY(),maze.getStartPosition().getZ(),canBeMovedUp(),canBeMovedDown(),true,isSolvingNow);
 			
 		}
 		catch (IOException e) 
@@ -415,6 +432,12 @@ public class GUI extends CommonView
 	@Override
 	public void showExit() 
 	{
+		
+		if((thread!=null)&&(!thread.isInterrupted()))
+		{
+			thread.interrupt();
+		}
+		
 		mainWindow.close();
 	}
 	/**
@@ -451,13 +474,24 @@ public class GUI extends CommonView
 				{
 					for(State<Position> s:al)
 					{
+						if(mainWindow.IsDisposed())
+						{
+							return;
+						}
+						
 						Position p=s.getState();
+						if(p.equals(maze.getGoalPosition()))
+						{
+							isSolvingNow=false;
+						}
 						int x=p.getX();
 						int y=p.getY();
 						int z=p.getZ();
+						
+						
 						characterPlace.setXYZ(x, y, z);
 						
-						mainWindow.moveCharacterInCanvas(x,y,z,canBeMovedUp(),canBeMovedDown(),false);
+						mainWindow.moveCharacterInCanvas(x,y,z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 						
 						try {
 							Thread.sleep(500);
@@ -470,8 +504,9 @@ public class GUI extends CommonView
 				}
 			});
 			thread.start();
+			
 		}
-		else
+		else//if hint
 		{
 			ArrayList<State<Position>> al=solution.getAL();
 			if(al.isEmpty())
@@ -485,7 +520,7 @@ public class GUI extends CommonView
 				int y=p.getY();
 				int z=p.getZ();
 				characterPlace.setXYZ(x, y, z);
-				mainWindow.moveCharacterInCanvas(x, y, z,canBeMovedUp(),canBeMovedDown(),false);
+				mainWindow.moveCharacterInCanvas(x, y, z,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 	
 			}
 		}
