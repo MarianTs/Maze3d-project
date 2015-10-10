@@ -1,0 +1,126 @@
+package presenter;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Observable;
+import java.util.Observer;
+
+import model.Model;
+import view.View;
+
+public class Presenter implements Observer {
+
+	Model m;
+	View ui;
+	HashMap<String, Command> viewCommands;
+	HashMap<String, Command> modelCommands;
+	
+	public Presenter(Model m,View ui) 
+	{
+		
+		this.m=m;
+		this.ui=ui;
+		viewCommands=new HashMap<String,Command>();
+		modelCommands=new HashMap<String,Command>();
+		initCommands();
+	}
+	
+	
+	@Override
+	public void update(Observable o, Object arg) 
+	{
+		if(o==ui)
+		{
+			String input=ui.getUserCommand();
+			//deleting the spaces in the begining of the command
+			while(input.charAt(0)==' ')
+			{
+				input=input.substring(1);
+			}
+			
+			if(viewCommands.containsKey(input))
+			{
+				Command command=viewCommands.get(input);
+				command.doCommand();
+			}
+			else
+			{
+				Command command=viewCommands.get("error");
+				command.doCommand();
+				
+			}
+		}
+		if(o==m)
+		{
+			String input=(String)arg;
+			if(modelCommands.containsKey(input))
+			{
+				Command command=modelCommands.get(input);
+				command.doCommand();
+			}
+			
+			else
+			{
+				Command command=viewCommands.get("error");
+				command.doCommand();
+				
+			}
+		}
+	}
+	
+	public void initCommands()
+	{
+		//commands that came from view
+		
+		viewCommands.put("open the server", new Command() {
+			
+			@Override
+			public void doCommand() {
+				m.openTheServer();
+				
+			}
+		});
+		viewCommands.put("close the server",new Command() {
+			
+			@Override
+			public void doCommand() {
+				m.closeServer();
+				
+			}
+		});
+		
+		//commands that came from model
+		
+		modelCommands.put("error", new Command() {
+			
+			@Override
+			public void doCommand() {
+				
+				ui.showError("Invalid command");
+				
+			}
+		});
+		modelCommands.put("open the server", new Command() {
+			
+			@Override
+			public void doCommand() {
+				String s=m.getOpenCode();
+				ui.showOpenTheServer(s);
+				
+				
+			}
+		});
+		modelCommands.put("close the server", new Command() {
+			
+			@Override
+			public void doCommand() {
+				String s=m.getCloseCode();
+				ui.showClose(s);
+				
+				
+			}
+		});
+		
+	}
+
+}

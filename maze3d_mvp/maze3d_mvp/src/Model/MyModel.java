@@ -78,7 +78,7 @@ public class MyModel extends CommonModel
 		try 
 		{
 
-			File f=new File("maze solutions.zip");
+			File f=new File("./resources/maze solutions.zip");
 			if(f.exists())
 			{
 				//loading it compressed
