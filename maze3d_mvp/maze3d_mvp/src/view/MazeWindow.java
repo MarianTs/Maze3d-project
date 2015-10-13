@@ -5,9 +5,12 @@ import java.util.HashMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -93,7 +96,7 @@ public class MazeWindow extends BasicWindow
 		
 		//canvas with the maze game
 		mazeCanvas=new Maze2dDisplay(shell, SWT.NONE,new MyGameCharacter());
-		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,10));
+		mazeCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,11));
 
 		mazeCanvas.addKeyListener(arrowKeyListener);
 
@@ -134,10 +137,13 @@ public class MazeWindow extends BasicWindow
 		down.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
 		down.setEnabled(false);
 		
-//		Image im=new Image(display, "./resources/minion_banana_skiny.png");
-//		CLabel label=new CLabel(shell, SWT.NONE);
-//		label.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,3));
-//		label.setImage(im);
+		Label message=new Label(shell, SWT.CENTER);
+		message.setBackground(new Color(null, 198,226,255));
+		FontData fontData = message.getFont().getFontData()[0];
+		Font font = new Font(display, new FontData(fontData.getName(), fontData.getHeight(), SWT.ITALIC));
+		message.setFont(font);
+		message.setText("Move with arrow keys,\nTry to reach the banana!");
+		message.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
 
 		//exit button
 		Button exit=new Button(shell, SWT.PUSH);
