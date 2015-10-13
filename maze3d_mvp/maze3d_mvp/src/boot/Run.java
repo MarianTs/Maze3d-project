@@ -25,11 +25,11 @@ public class Run {
 
 	public static void main(String[] args) {
 		
-		
+		//constructing model
 		CommonModel m = new MyModel(args);
 		String s=m.getProperties().getTypeOfUserInterfece();
 		CommonView ui;
-		
+		//checking if gui or cli selected
 		if(s.intern()=="gui")
 		{
 			ui=new GUI();
@@ -42,7 +42,7 @@ public class Run {
 		{
 			ui=new GUI();
 		}
-			
+		
 		Presenter p=new Presenter(m, ui);
 
 		ui.addObserver(p);

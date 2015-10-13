@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import presenter.Properties;
 /**
  * constructing an xml file to load properties
- * @author Marian
+ * @author Marian & Lidor
  *
  */
 public class RunProperties {

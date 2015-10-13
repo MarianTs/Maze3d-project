@@ -14,7 +14,7 @@ public interface Model
 	/**
 	 * Handling the command:generate 3d maze <name> <x> <y> <z> <algorithm>
 	 * name-name of the maze,x-amount of floors in maze,y-amount of rows,z-amount of columns,
-	 * algorithm-prim/simple (generating algorithms)
+	 * algorithm-prim/simple (generating algorithms)-not necessary to enter
 	 * @param paramArray Array of strings with the parameters i mentioned above
 	 */
 	public void handleGenerate3dMaze(String[] mazeParam);

@@ -36,7 +36,7 @@ import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import presenter.Properties;
 /**
- * 
+ * class that defines the commands of model
  * @author Marian & Lidor
  *
  */
@@ -64,6 +64,7 @@ public class MyModel extends CommonModel
 	
 	
 	
+	
 	private String errorCode;//the code we enter when there is an error
 	private String[] dirList;//the name of files and folder in current path
 	private String generate3dmazeCode; //the pharse:maze <name> is ready
@@ -83,7 +84,9 @@ public class MyModel extends CommonModel
 	public MyModel(String[] path) 
 	{
 		
-		handleLoadXML(path);//loading the default xml file
+		handleLoadXML(path);//loading xml file
+		//number of threads loaded here
+		threadPool = Executors.newFixedThreadPool(properties.getNumberOfThreads());
 
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeHalfCollection=new HashMap<String,Maze3d>();
@@ -114,9 +117,12 @@ public class MyModel extends CommonModel
 		}
 		
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDirPath(String[] path)
 	{
+		//client doesn't enter path
 		if(path==null)
 		{
 			errorCode="Invalid path";
@@ -126,17 +132,26 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
-		if (path.length != 1) // path does'nt entered
+		
+		//if the path has spaces
+		StringBuilder sb=new StringBuilder();
+		for(int i=0;i<path.length;i++)
 		{
-			errorCode="Invalid path";
-			setChanged();
-			String[] s=new String[1];
-			s[0]="error";
-			notifyObservers(s);
-			return;
+			if(i==path.length-1)
+			{
+				sb.append(path[i]);
+			}
+			else
+			{
+				sb.append(path[i]+" ");
+			}
+			
 		}
-		File f = new File(path[0].toString());
+		String whole_path=sb.toString();
 
+		File f = new File(whole_path);
+
+		//if i got a valid path
 		if ((f.list() != null) && (f.list().length > 0)) 
 		{
 			dirList=f.list();
@@ -166,18 +181,22 @@ public class MyModel extends CommonModel
 		}
 
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleGenerate3dMaze(String[] mazeParam)
 	{
-		if(mazeParam==null)
+		
+		if(mazeParam==null)//didn't get any prameters
 		{
-			errorCode="Invalid parameters";
-			setChanged();
+			errorCode="Invalid parameters";//entering error code
+			setChanged();//Notifying the observers to fetch the error code and show it in view
 			String[] s=new String[1];
 			s[0]="error";
 			notifyObservers(s);
 			return;
 		}
+		
 		if (mazeParam.length != 5) 
 		{
 			if(mazeParam.length!=4)
@@ -219,8 +238,8 @@ public class MyModel extends CommonModel
 			public String call() throws Exception
 			{
 				Maze3dGenerator mg;
-				if(mazeParam.length==4)
-				{
+				if(mazeParam.length==4)//if client entered command without the algorithm
+				{//take the algorithm from the xml file of properties
 					if(properties.getAlgorithmToGenerateMaze().intern()=="simple")
 					{
 						mg = new SimpleMaze3dGenerator();
@@ -232,11 +251,10 @@ public class MyModel extends CommonModel
 					else
 					{
 						errorCode="Invalid algorithm";
-						
 						return "error";
 					}
 				}
-				else if(mazeParam.length==5)
+				else if(mazeParam.length==5)//if algorithm entered
 				{
 					if (mazeParam[mazeParam.length - 1].intern() == "simple")
 					{
@@ -262,15 +280,18 @@ public class MyModel extends CommonModel
 
 				mazeCollection.remove(mazeParam[0].toString());//removes a maze with the same name,if exists
 
+				//generating a maze with the specified sizes
 				Maze3d maze=mg.generate(Integer.parseInt(mazeParam[1]),Integer.parseInt(mazeParam[2]), Integer.parseInt(mazeParam[3]));
+				//entering the maze into the collection,in order to take it out when necessary
 				mazeCollection.put(mazeParam[0].toString(),maze);
-				// generate maze with specified algorithm ,with specified sizes.
+				
 				
 				generate3dmazeCode="maze " + mazeParam[0].toString() + " is ready";
-				return "generate 3d maze";
+				return "generate 3d maze";//returning string into Future object
 			}
 		});
 		
+		//future take time to calculate thats why we put future.get into thread
 		threadPool.execute(new Runnable() {
 			
 			@Override
@@ -313,6 +334,9 @@ public class MyModel extends CommonModel
 		});
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplayName(String[] paramArray) 
 	{
 		if(paramArray==null)
@@ -348,17 +372,16 @@ public class MyModel extends CommonModel
 		arg[1]=paramArray[0];
 		setChanged();
 		notifyObservers(arg);
-		
-		//c.passDisplayName(mazeCollection.get(paramArray[0].toString()).toByteArray());
-		// getting the maze from maze collection
-		
 
 	}
 	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplayCrossSectionBy(String[] paramArray)
 	{
+		//validation check
 		if(paramArray==null)
 		{
 			errorCode="Invalid command";
@@ -390,17 +413,21 @@ public class MyModel extends CommonModel
 			
 		}
 
-		
-		if (paramArray[0].intern() == "x") {
+		//if cross section of x
+		if (paramArray[0].intern() == "x") 
+		{
 			Maze3d maze = mazeCollection.get(paramArray[3].toString());
-			try {
+			try 
+			{
+				//putting the last cross section in its variable
 				crossSection = maze.getCrossSectionByX(Integer.parseInt(paramArray[1]));
 				String[] s=new String[1];
 				s[0]="display cross section by";
 				setChanged();
 				notifyObservers(s);
 				return;
-			} catch (NumberFormatException e) 
+			} 
+			catch (NumberFormatException e) 
 			{
 				errorCode="Invalid parameters";
 				String[] s=new String[1];
@@ -408,7 +435,8 @@ public class MyModel extends CommonModel
 				setChanged();
 				notifyObservers(s);
 				return;
-			} catch (IndexOutOfBoundsException e) {
+			} 
+			catch (IndexOutOfBoundsException e) {
 				errorCode="x coordinate out of bounds";
 				String[] s=new String[1];
 				s[0]="error";
@@ -417,9 +445,10 @@ public class MyModel extends CommonModel
 				return;
 			}
 
-		} else if (paramArray[0].intern() == "y") 
+		} 
+		else if (paramArray[0].intern() == "y") //y cross section
 		{
-			Maze3d maze = mazeCollection.get(paramArray[3].toString());
+			Maze3d maze = mazeCollection.get(paramArray[3].toString());//taking the maze of the collection by its name
 			try 
 			{
 				crossSection = maze.getCrossSectionByY(Integer.parseInt(paramArray[1]));
@@ -488,6 +517,9 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleError(String[] paramArr)
 	{
 
@@ -499,7 +531,9 @@ public class MyModel extends CommonModel
 		return;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleExit(String[] paramArr)
 	{
 		if(paramArr!=null)
@@ -512,11 +546,12 @@ public class MyModel extends CommonModel
 			return;
 		}
 		
-
+		//shutting down the threads
 		threadPool.shutdown();
 		try 
 		{
 			while(!threadPool.awaitTermination(10, TimeUnit.SECONDS));
+			//waits for the threads to finish and shutting down the thread pool
 		} 
 		catch (InterruptedException e) 
 		{
@@ -528,6 +563,9 @@ public class MyModel extends CommonModel
 		notifyObservers(s);
 			
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleSaveMaze(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -570,11 +608,13 @@ public class MyModel extends CommonModel
 		
 		try 
 		{
+			//writing the maze shrinked
 			MyCompressorOutputStream out = new MyCompressorOutputStream(new FileOutputStream(paramArray[1].toString()));
 			out.write(ByteBuffer.allocate(4).putInt(size).array());// first writing the size of the maze
 			out.write(maze.toByteArray());
 			out.close();
 			
+			//Notifying that the maze has been saved to file
 			saveMazeCode=paramArray[0].toString() + " has been saved";
 			String[] s=new String[1];
 			s[0]="save maze";
@@ -595,6 +635,9 @@ public class MyModel extends CommonModel
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleLoadMaze(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -618,7 +661,6 @@ public class MyModel extends CommonModel
 		//checking if there are already maze with the same name
 		if (mazeCollection.containsKey(paramArray[1])) 
 		{
-			
 			errorCode="Invalid name,this name is taken";
 			String[] s=new String[1];
 			s[0]="error";
@@ -691,6 +733,11 @@ public class MyModel extends CommonModel
 			e.printStackTrace();
 		}
 	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleMazeSize(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -722,7 +769,7 @@ public class MyModel extends CommonModel
 		}
 
 		Maze3d maze = mazeCollection.get(paramArray[0]);
-		mazeSize=maze.toByteArray().length;
+		mazeSize=maze.toByteArray().length;//getting the number of bytes of maze
 		String[] s=new String[1];
 		s[0]="maze size";
 		setChanged();
@@ -731,6 +778,9 @@ public class MyModel extends CommonModel
 		
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleFileSize(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -767,7 +817,7 @@ public class MyModel extends CommonModel
 		{
 			File file=new File(mazeToFile.get(paramArray[0]));//taking the file name from the hashmap
 			
-			fileSize=file.length();
+			fileSize=file.length();//checking the file size containing the maze
 			String[] s=new String[1];
 			s[0]="file size";
 			setChanged();
@@ -784,6 +834,9 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleSolveMaze(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -823,16 +876,7 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
-//		//if i have solution for this maze,so don't enter into the thread,give this solution immediately
-//		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
-//		{
-//			solveMazeCode="Solution for "+paramArray[0]+ " is ready";
-//			setChanged();
-//			String[] s=new String[1];
-//			s[0]="solve";
-//			notifyObservers(s);
-//			return;
-//		}
+
 		
 		//thread which generates solution for the maze
 		Future<String> future=threadPool.submit(new Callable<String>()
@@ -843,13 +887,13 @@ public class MyModel extends CommonModel
 			{
 				
 				StringBuilder algo=new StringBuilder();
-				if(paramArray.length==1)
+				if(paramArray.length==1)//only maze name without the algorithm
 				{
-					algo.append(properties.getAlgorithmToSearch());
+					algo.append(properties.getAlgorithmToSearch());//take the algorithm from properties file
 				}
-				else
+				else//client entered algorithm name
 				{
-					for(int i=1;i<paramArray.length;i++)
+					for(int i=1;i<paramArray.length;i++)//constructing the algorithm name(because there are algorithms with more than one word)
 					{
 						if(i==paramArray.length-1)
 						{
@@ -861,6 +905,7 @@ public class MyModel extends CommonModel
 						}
 					}
 				}
+				//if the algorithm is invalid
 				if((algo.toString().intern()!="bfs")&&(algo.toString().intern()!="astar manhatten distance")&&(algo.toString().intern()!="astar air distance"))
 				{
 					errorCode="Invalid algorithm";
@@ -868,26 +913,25 @@ public class MyModel extends CommonModel
 				}
 				
 				
-				
+				//asking the server for solution
 				Solution<Position> sol=askingTheServerForSolution(algo.toString(),mazeCollection.get(paramArray[0]));
 				
+				//if there was some problem with connection returning null,and showing error
 				if(sol==null)
 				{
-					errorCode="server is closed,please open the server first";
+					errorCode="problem with server,try to open the server";
 					return "error";
 				}
-				
+				//put the maze in the collection,in order to take it out when display command written
 				mazeSolutions.put(mazeCollection.get(paramArray[0]),sol );
 				
 				solveMazeCode="Solution for "+paramArray[0]+ " is ready";
 				return "solve";
-				
 
-			
-				
 			}
 		});
 		
+		//putting the future.get in thread ,not waiting for response for a long time
 		threadPool.execute(new Runnable() 
 		{
 			
@@ -915,9 +959,7 @@ public class MyModel extends CommonModel
 						notifyObservers(s);
 						return;
 					}
-					
 				}
-				
 				catch (InterruptedException e) 
 				{
 					e.printStackTrace();
@@ -929,9 +971,11 @@ public class MyModel extends CommonModel
 				
 			}
 		});
-	
-		
+
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplaySolution(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -965,11 +1009,10 @@ public class MyModel extends CommonModel
 		
 		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
 		{
-			
-			
 			String[] s=new String[2];
 			s[0]="display solution";
 			s[1]=paramArray[0].toString();
+			//passing the name of the maze that his solution is ready,that presenter will know what to take out
 
 			setChanged();
 			notifyObservers(s);
@@ -985,8 +1028,12 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleSolveFrom(String[] paramArray)
 	{
+		//solving mazes that there start point is now in the start position
 		if(paramArray==null)
 		{
 			errorCode="Invalid parametrs";
@@ -998,7 +1045,7 @@ public class MyModel extends CommonModel
 		}
 		
 		
-		
+		//checking number of parameters
 		if(paramArray.length!=5)
 		{
 			if(paramArray.length!=7)
@@ -1016,7 +1063,6 @@ public class MyModel extends CommonModel
 			}
 		}
 
-
 		
 		//thread which generates solution for the maze
 		Future<String> future=threadPool.submit(new Callable<String>()
@@ -1025,6 +1071,7 @@ public class MyModel extends CommonModel
 			@Override
 			public String call() throws Exception
 			{
+				//constructing the name of the algorithm to solve the maze
 				StringBuilder algo=new StringBuilder();
 				if(paramArray.length==4)
 				{
@@ -1055,24 +1102,31 @@ public class MyModel extends CommonModel
 				}
 				
 				
-				
-				Maze3d maze=mazeCollection.get(paramArray[0]);
+				//taking out the maze from collection
+				Maze3d maze=new Maze3d(mazeCollection.get(paramArray[0]).toByteArray());
+				//generating a new place in memory,in order not to change the maze in mazSolutions
 				int x=Integer.parseInt(paramArray[paramArray.length-3]);
 				int y=Integer.parseInt(paramArray[paramArray.length-2]);
 				int z=Integer.parseInt(paramArray[paramArray.length-1]);
-				maze.setStartPosition(new Position(x,y,z));
+				maze.setStartPosition(new Position(x,y,z));//local changing
+				//changing the start position of the maze,to solve the maze from another point in the maze
 				
 				
 				Solution<Position> sol=askingTheServerForSolution(algo.toString(), maze);
-
+				//asking the server for solution
 				
-				if(sol==null)
+				if(sol==null)//if there was a problem with the connection
 				{
-					errorCode="server is closed,please open the server first";
+					errorCode="problem with server,try openning the server";
 					return "error";
 				}
 				
+				//now the maze entered to the hash map is a maze with other start position,
+				//it is different from the same maze with the valid start position
+				//thats why it doesn't override the previous one(good hash code)
 				mazeSolutions.put(maze, sol);
+				
+				//this maze has now new place,for half solution mazes
 				mazeHalfCollection.put(paramArray[0].toString(),maze);
 				solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
 				return "solve from";
@@ -1091,7 +1145,6 @@ public class MyModel extends CommonModel
 					String message=future.get();
 					if(message.intern()=="error")
 					{
-
 						//we already put the error in errorCode
 						setChanged();
 						String[] s=new String[1];
@@ -1122,7 +1175,9 @@ public class MyModel extends CommonModel
 			}
 		});
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplayHalfSolution(String[] paramArray)
 	{
 		if(paramArray==null)
@@ -1156,8 +1211,6 @@ public class MyModel extends CommonModel
 		
 		if(mazeSolutions.containsKey(mazeHalfCollection.get(paramArray[0])))
 		{
-			
-			
 			String[] s=new String[2];
 			s[0]="display half solution";
 			s[1]=paramArray[0].toString();
@@ -1176,10 +1229,12 @@ public class MyModel extends CommonModel
 			return;
 		}
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleLoadXML(String[] path)
 	{
-
+		//building the path,if it has spaces
 		StringBuilder sb=new StringBuilder();
 		
 		if(path==null)
@@ -1198,23 +1253,32 @@ public class MyModel extends CommonModel
 		{
 			for(int i=0;i<path.length;i++)
 			{
-				sb.append(path[i]);
+				if(i==path.length-1)
+				{
+					sb.append(path[i]);
+				}
+				else
+				{
+					sb.append(path[i]+" ");
+				}
 			}
 		}
 
 		try
 		{
 			File f=new File(sb.toString());
+			//if file doesn't exists
 			if(!f.exists())
 			{
+				//load it
 				XMLEncoder xmlE = new XMLEncoder(new FileOutputStream(sb.toString()));
 				xmlE.writeObject(new Properties(10, "astar air distance", "prim","gui"));
 				xmlE.close();
 			}
+			//now it exists,take the properties from the file
 			XMLDecoder xmlD= new XMLDecoder(new FileInputStream(sb.toString()));
 			properties=(Properties)xmlD.readObject();
-			
-			threadPool = Executors.newFixedThreadPool(properties.getNumberOfThreads());
+
 			xmlD.close();
 			
 			
@@ -1251,42 +1315,43 @@ public class MyModel extends CommonModel
 		
 		try {
 			//defines the socket and the input and output sources
-
 			theServer = new Socket(clientProperties.getServerIp().toString(),clientProperties.getServerPort());
 			
 			//now we connected to the server
+			//taking out of socket his output and input streams
 			outToServer = new PrintWriter(theServer.getOutputStream());
 			inFromServer=new BufferedReader(new InputStreamReader(theServer.getInputStream()));
 
+			//writing hello to the server
 			outToServer.println("hello\n");
 			outToServer.flush();
 			
-			
+			//reading ok
 			inFromServer.readLine();
 			
 			ArrayList<Object> packetToServer=new ArrayList<Object>();
 			packetToServer.add(algo);
-			packetToServer.add(maze);
-		
-
+			packetToServer.add(maze.toByteArray());
 			
+			//sending array list to the server,containing the algorithm that solve the maze and the maze
 			mazeToServer=new ObjectOutputStream(theServer.getOutputStream());
 			mazeToServer.writeObject(packetToServer);
 			mazeToServer.flush();
 			
-			solutionFromServer=new ObjectInputStream(theServer.getInputStream());
 			
+			solutionFromServer=new ObjectInputStream(theServer.getInputStream());
+			//reading the solution
 			Solution<Position> sol=(Solution<Position>)solutionFromServer.readObject();
 
-			System.out.println("sol  " +sol);
 			mazeToServer.close();
 			solutionFromServer.close();
 			outToServer.close();
 			inFromServer.close();
 			
 			theServer.close();
+			
 			return sol;
-		}
+		}//in any other problem with server we return null
 		catch (IOException e) 
 		{
 			//e.printStackTrace();
@@ -1308,63 +1373,95 @@ public class MyModel extends CommonModel
 	}
 	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public Properties getProperties() {
 		return properties;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getSolveHalfMazeCode() {
 		return solveHalfMazeCode;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public Solution<Position> getSpecificSolution(String name)
 	{
 		return mazeSolutions.get(mazeCollection.get(name));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public Solution<Position> getSpecificHalfSolution(String name)
 	{
 		return mazeSolutions.get(mazeHalfCollection.get(name));
 	} 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getSolveMazeCode() 
 	{
 		return solveMazeCode;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getLoadMazeCode()
 	{
 		return loadMazeCode;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getSaveMazeCode()
 	{
 		return saveMazeCode;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getErrorCode() {
 		return errorCode;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String[] getDirList() {
 		return dirList;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getGenerate3dmazeCode() {
 		return generate3dmazeCode;
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */	
 	public byte[] getSpecificMazeFromColllection(String name)
 	{
 		return mazeCollection.get(name).toByteArray();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public int[][] getCrossSection() 
 	{
 		return crossSection;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getMazeSize() 
 	{
 		return mazeSize;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public long getFileSize() 
 	{
 		return fileSize;

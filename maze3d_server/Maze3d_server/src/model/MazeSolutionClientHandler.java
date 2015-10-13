@@ -80,7 +80,7 @@ public class MazeSolutionClientHandler implements ClientHandler
 				ObjectInputStream mazeFromClientt=new ObjectInputStream(inFromClient);
 				ArrayList<Object> packetFromClient=(ArrayList<Object>)mazeFromClientt.readObject();
 				String algo=(String)packetFromClient.get(0);
-				Maze3d maze=(Maze3d)packetFromClient.get(1);
+				Maze3d maze=new Maze3d((byte[])packetFromClient.get(1));
 
 
 				ObjectOutputStream solutionToClient=new ObjectOutputStream(outToClient);
@@ -125,6 +125,7 @@ public class MazeSolutionClientHandler implements ClientHandler
 
 
 				}
+				
 				solutionToClient.writeObject(sol);
 				solutionToClient.flush();
 

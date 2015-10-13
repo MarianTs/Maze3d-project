@@ -176,7 +176,11 @@ public class MazeWindow extends BasicWindow
 			public void run() {
 				if(down!=null)
 				{
-					down.setEnabled(canBeMovedDown);
+					if(!isDisposed)
+					{
+						down.setEnabled(canBeMovedDown);
+					}
+					
 				}
 
 			}
@@ -189,7 +193,11 @@ public class MazeWindow extends BasicWindow
 			public void run() {
 				if(up!=null)
 				{
-					up.setEnabled(canBeMovedUp);
+					if(!isDisposed)
+					{
+						up.setEnabled(canBeMovedUp);
+					}
+					
 				}
 
 
@@ -201,9 +209,13 @@ public class MazeWindow extends BasicWindow
 				
 				@Override
 				public void run() {
-					solve.setEnabled(true);
-					hint.setEnabled(true);
-					reset.setEnabled(true);
+					if(!isDisposed)
+					{
+						solve.setEnabled(true);
+						hint.setEnabled(true);
+						reset.setEnabled(true);
+					}
+					
 					
 				}
 			});
@@ -215,12 +227,14 @@ public class MazeWindow extends BasicWindow
 
 			@Override
 			public void run() {
-				solve.setEnabled(!isSolvingNow);
-				hint.setEnabled(!isSolvingNow);
-				reset.setEnabled(!isSolvingNow);
-				menuBar.setEnabled(!isSolvingNow);
-				//exit.setEnabled(false);
-
+				if(!isDisposed)
+				{
+					solve.setEnabled(!isSolvingNow);
+					hint.setEnabled(!isSolvingNow);
+					reset.setEnabled(!isSolvingNow);
+					menuBar.setEnabled(!isSolvingNow);
+					//exit.setEnabled(false);
+				}
 			}
 		});
 		
