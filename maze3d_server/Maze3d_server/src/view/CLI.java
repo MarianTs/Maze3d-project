@@ -26,7 +26,7 @@ public class CLI extends CommonView {
 	
 	public void start() 
 	{
-		out.println("Hello,Welcome to server command line!\nPlease Enter command:\nto open the server type:open the server,\nto close type:close the server\n\n");
+		out.println("Hello,Welcome to server command line!\nPlease Enter command:\n\tto open the server type:open the server,\n\tto close type:close the server");
 		out.flush();
 		new Thread(new Runnable() 
 		{
@@ -76,6 +76,11 @@ public class CLI extends CommonView {
 		out.flush();
 	}
 	public void showError(String message)
+	{
+		out.println(message);
+		out.flush();
+	}
+	public void showMessages(String message)
 	{
 		out.println(message);
 		out.flush();

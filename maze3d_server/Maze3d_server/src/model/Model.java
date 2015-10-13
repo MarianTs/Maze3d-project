@@ -9,4 +9,5 @@ public interface Model
 	
 	public String getOpenCode();
 	public String getCloseCode();
+	public String getMessageCode();
 }

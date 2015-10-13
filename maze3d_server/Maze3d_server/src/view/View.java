@@ -11,4 +11,5 @@ public interface View
 	public void showClose(String message);
 	
 	public void showError(String message);
+	public void showMessages(String message);
 }

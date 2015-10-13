@@ -246,10 +246,18 @@ public class MazeWindow extends BasicWindow
 	 */
 	public void showMessageBox(String error)
 	{
-		MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
-		messageBox.setMessage(error);
-		messageBox.setText("Error");
-		messageBox.open();
+		display.syncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
+				messageBox.setMessage(error);
+				messageBox.setText("Error");
+				messageBox.open();
+				
+			}
+		});
+		
 	}
 
 	

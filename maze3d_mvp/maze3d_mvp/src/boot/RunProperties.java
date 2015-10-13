@@ -20,7 +20,7 @@ public class RunProperties {
 		try 
 		{
 			XMLEncoder xmlE = new XMLEncoder(new FileOutputStream("./resources/properties.xml"));
-			xmlE.writeObject(new Properties(10, "astar air distance", "prim",5,"gui"));
+			xmlE.writeObject(new Properties(10, "astar air distance", "prim","gui"));
 			xmlE.close();
 		} 
 		catch (FileNotFoundException e) 

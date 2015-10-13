@@ -19,7 +19,6 @@ public class Properties implements Serializable {
 	private int numberOfThreads;
 	private String algorithmToSearch;
 	private String algorithmToGenerateMaze;
-	private int numOfClients;
 	private String typeOfUserInterfece;
 	
 	/**
@@ -27,16 +26,15 @@ public class Properties implements Serializable {
 	 * @param numberOfThreads number of threads allowed to run in the model
 	 * @param algorithmToSearch which algorithm to search the maze:astar air distance,astar Manhattan distance,bfs
 	 * @param algorithmToGenerateMaze which algorithm to generate the maze:prim/simple
-	 * @param numOfClients number of clients in the client server architecture
 	 * @param typeOfUserInterfece which user interface to use:cli/gui
 	 */
-	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze,int numOfClients,String typeOfUserInterfece) 
+	public Properties(int numberOfThreads, String algorithmToSearch, String algorithmToGenerateMaze,String typeOfUserInterfece) 
 	{
 		super();
 		this.numberOfThreads = numberOfThreads;
 		this.algorithmToSearch = algorithmToSearch;
 		this.algorithmToGenerateMaze = algorithmToGenerateMaze;
-		this.numOfClients=numOfClients;
+
 		this.typeOfUserInterfece=typeOfUserInterfece;
 	}
 	/**
@@ -56,7 +54,6 @@ public class Properties implements Serializable {
 		this.numberOfThreads=p.numberOfThreads;
 		this.algorithmToGenerateMaze=p.algorithmToGenerateMaze;
 		this.algorithmToSearch=p.algorithmToSearch;
-		this.numOfClients=p.numOfClients;
 	}
 	/**
 	 * return the the type of user interface
@@ -81,20 +78,8 @@ public class Properties implements Serializable {
 		return numberOfThreads;
 	}
 	
-	/**
-	 * returning the number of clients in the client server architecture
-	 * @return number of clients
-	 */
-	public int getNumOfClients() {
-		return numOfClients;
-	}
-	/**
-	 * setting the number of clients in the client server architecure
-	 * @param numOfClients number of clients
-	 */
-	public void setNumOfClients(int numOfClients) {
-		this.numOfClients = numOfClients;
-	}
+	
+	
 	/**
 	 * setting the number of threads
 	 * @param numberOfThreads number of threads
@@ -121,7 +106,7 @@ public class Properties implements Serializable {
 	
 	/**
 	 * getting the algorithm we generate with,the maze(prim ,simple)
-	 * @return name of the algoritm
+	 * @return name of the algorithm
 	 */
 	public String getAlgorithmToGenerateMaze() {
 		return algorithmToGenerateMaze;

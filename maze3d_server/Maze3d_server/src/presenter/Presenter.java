@@ -45,7 +45,7 @@ public class Presenter implements Observer {
 			}
 			else
 			{
-				Command command=viewCommands.get("error");
+				Command command=modelCommands.get("error");
 				command.doCommand();
 				
 			}
@@ -61,7 +61,7 @@ public class Presenter implements Observer {
 			
 			else
 			{
-				Command command=viewCommands.get("error");
+				Command command=modelCommands.get("error");
 				command.doCommand();
 				
 			}
@@ -120,7 +120,16 @@ public class Presenter implements Observer {
 				
 			}
 		});
-		
+		modelCommands.put("pass messages", new Command() {
+			
+			@Override
+			public void doCommand() {
+				String s=m.getMessageCode();
+				ui.showMessages(s);
+				
+				
+			}
+		});
 	}
 
 }

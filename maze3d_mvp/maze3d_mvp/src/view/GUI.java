@@ -160,11 +160,11 @@ public class GUI extends CommonView
 				int y=characterPlace.getY();
 				int z=characterPlace.getZ();
 				message="solve from m "+x+" "+y+" "+z;
-				isSolve=true;
+				
 
 				setChanged();
 				notifyObservers();
-				
+				isSolve=true;
 
 				
 			}

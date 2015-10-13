@@ -2,6 +2,7 @@ package Model;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -10,9 +11,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -20,48 +25,61 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import algorithms.mazeGenerators.Maze3d;
 import algorithms.mazeGenerators.Maze3dGenerator;
 import algorithms.mazeGenerators.MyMaze3dGenerator;
 import algorithms.mazeGenerators.Position;
 import algorithms.mazeGenerators.SimpleMaze3dGenerator;
-import algorithms.search.AStar;
-import algorithms.search.BFS;
-import algorithms.search.MazeAirDistance;
-import algorithms.search.MazeManhattenDistance;
-import algorithms.search.Searcher;
 import algorithms.search.Solution;
-import algotithms.demo.Maze3dSearchable;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
 import presenter.Properties;
-
+/**
+ * 
+ * @author Marian & Lidor
+ *
+ */
 public class MyModel extends CommonModel 
 {
 	private ExecutorService threadPool;
+	//the thread pool where all the threads are open in the model
+	
 	private HashMap<String, Maze3d> mazeCollection;
+	//holds names and mazes,where start position is in it's place
+	
 	private HashMap<String, String> mazeToFile;
-	private HashMap<Maze3d, Solution<Position>> mazeSolutions;
+	//holds the name of the maze and the file it is located in
+	
+	private HashMap<Maze3d, Solution<Position>> mazeSolutions;//the solutions that the class already asked the server
+	//holds maze object as a key(can be maze with start position in it's place,
+	//or the start position is located somewhere in the maze) and value of solution to the current maze.
+	
 	private HashMap<String, Maze3d> mazeHalfCollection;
+	//holds name of maze as a key and maze as value,where start position located in some place in the maze
+	
+	private ClientProperties clientProperties;
+	//a class that holds the server IP and port of the server that our model will contact to
+	//when it needs solution for mazes
 	
 	
-	private String errorCode;
-	private String[] dirList;
-	private String generate3dmazeCode;
-	private int[][] crossSection;
-	private String saveMazeCode;
-	private String loadMazeCode;
-	private int mazeSize;
-	private long fileSize;
-	private String solveMazeCode;
-	private String solveHalfMazeCode;
-	private Properties properties;
-
 	
-
+	private String errorCode;//the code we enter when there is an error
+	private String[] dirList;//the name of files and folder in current path
+	private String generate3dmazeCode; //the pharse:maze <name> is ready
+	private int[][] crossSection;//the 2d array that represents the cross section of maze
+	private String saveMazeCode;//the phrase:maze has been saved
+	private String loadMazeCode;//the phrase:maze has been loaded
+	private int mazeSize;//the size of the maze in memory
+	private long fileSize;//the size of maze in file
+	private String solveMazeCode;//the phrase :solution for <maze> is ready
+	private String solveHalfMazeCode;//the phrase:half solution for <maze> is ready
+	private Properties properties;//a class which holds
+	
+	/**
+	 * constructor using fields
+	 * @param path path of xml file,where all the properties are held
+	 */
 	public MyModel(String[] path) 
 	{
 		
@@ -70,43 +88,30 @@ public class MyModel extends CommonModel
 		mazeCollection = new HashMap<String, Maze3d>();
 		mazeHalfCollection=new HashMap<String,Maze3d>();
 		mazeToFile=new HashMap<String,String>();
+		mazeSolutions=new HashMap<Maze3d,Solution<Position>>();
 		
-		mazeSolutions=new HashMap<Maze3d, Solution<Position>>();
-		
-			
-		//loading hash map with old solutions
-		try 
+		//loading the port and ip of the server
+		try
 		{
-
-			File f=new File("./resources/maze solutions.zip");
-			if(f.exists())
+			File f=new File("./resources/client properties.xml");
+			if(!f.exists())
 			{
-				//loading it compressed
-				ObjectInputStream objectIn = new ObjectInputStream(new GZIPInputStream(new FileInputStream("./resources/maze solutions.zip")));
-				//reading entire object into our maze solution collection
-				mazeSolutions=(HashMap<Maze3d, Solution<Position>>)objectIn.readObject();
-				objectIn.close();
-				
-
-				/*for (Map.Entry<Maze3d, Solution<Position>> entry : mazeSolutions.entrySet()) 
-				{
-				    //Maze3d key =entry.getKey();
-				    //Solution<Position> value =(Solution<Position>)entry.getValue();
-				    System.out.println("key: \n"+entry.getKey()+"\nvalue: \n"+entry.getValue());
-
-				}*/
+				XMLEncoder xmlE = new XMLEncoder(new FileOutputStream("./resources/client properties.xml"));
+				xmlE.writeObject(new ClientProperties("127.0.0.1",5400));
+				xmlE.close();
 			}
-
+			XMLDecoder xmlD= new XMLDecoder(new FileInputStream("./resources/client properties.xml"));
+			clientProperties=(ClientProperties)xmlD.readObject();
+			
+			
+			xmlD.close();
+			
 		} 
-		catch (ClassNotFoundException e) 
+		catch (FileNotFoundException e) 
 		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
+			
 			e.printStackTrace();
 		}
-		
 		
 	}
 	
@@ -507,30 +512,7 @@ public class MyModel extends CommonModel
 			return;
 		}
 		
-		
-		//writing the maze solution into file,in order to reopen it in next time the program will open
-		try 
-		{
-			ObjectOutputStream objectOut=new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("maze solutions.zip")));
-			objectOut.writeObject(mazeSolutions);
-			objectOut.flush();
-			objectOut.close();
-		} 
-		catch (FileNotFoundException e1)
-		{
 
-			e1.printStackTrace();
-		} 
-		catch (IOException e1) 
-		{
-
-			e1.printStackTrace();
-		}
-		
-		
-		
-		
-		
 		threadPool.shutdown();
 		try 
 		{
@@ -841,16 +823,16 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
-		//if i have solution for this maze,so don't enter into the thread,give this solution immediately
-		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
-		{
-			solveMazeCode="Solution for "+paramArray[0]+ " is ready";
-			setChanged();
-			String[] s=new String[1];
-			s[0]="solve";
-			notifyObservers(s);
-			return;
-		}
+//		//if i have solution for this maze,so don't enter into the thread,give this solution immediately
+//		if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0])))
+//		{
+//			solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+//			setChanged();
+//			String[] s=new String[1];
+//			s[0]="solve";
+//			notifyObservers(s);
+//			return;
+//		}
 		
 		//thread which generates solution for the maze
 		Future<String> future=threadPool.submit(new Callable<String>()
@@ -879,49 +861,28 @@ public class MyModel extends CommonModel
 						}
 					}
 				}
-
-				
-				if(algo.toString().equals("bfs"))
-				{
-					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
-					
-					Searcher<Position> bfs=new BFS<Position>();
-					Solution<Position> sol=bfs.search(ms);
-					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
-					
-					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
-					return "solve";
-				}
-				else if(algo.toString().equals("astar air distance"))
-				{
-					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
-					Searcher<Position> AstarAir=new AStar<Position>(new MazeAirDistance());
-					
-					Solution<Position> sol=AstarAir.search(ms);
-					
-					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
-					
-					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
-					return "solve";
-				}
-				else if(algo.toString().equals("astar manhatten distance"))
-				{
-					Maze3dSearchable ms=new Maze3dSearchable(mazeCollection.get(paramArray[0]));
-					Searcher<Position> AStarMan=new AStar<Position>(new MazeManhattenDistance());
-					
-					Solution<Position> sol=AStarMan.search(ms);
-					mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
-					
-					
-					solveMazeCode="Solution for "+paramArray[0]+ " is ready";
-					return "solve";
-				}
-				else
+				if((algo.toString().intern()!="bfs")&&(algo.toString().intern()!="astar manhatten distance")&&(algo.toString().intern()!="astar air distance"))
 				{
 					errorCode="Invalid algorithm";
 					return "error";
 				}
 				
+				
+				
+				Solution<Position> sol=askingTheServerForSolution(algo.toString(),mazeCollection.get(paramArray[0]));
+				
+				if(sol==null)
+				{
+					errorCode="server is closed,please open the server first";
+					return "error";
+				}
+				
+				mazeSolutions.put(mazeCollection.get(paramArray[0]),sol );
+				
+				solveMazeCode="Solution for "+paramArray[0]+ " is ready";
+				return "solve";
+				
+
 			
 				
 			}
@@ -968,7 +929,7 @@ public class MyModel extends CommonModel
 				
 			}
 		});
-		
+	
 		
 	}
 	public void handleDisplaySolution(String[] paramArray)
@@ -1101,55 +1062,21 @@ public class MyModel extends CommonModel
 				int z=Integer.parseInt(paramArray[paramArray.length-1]);
 				maze.setStartPosition(new Position(x,y,z));
 				
-				if(algo.toString().equals("bfs"))
+				
+				Solution<Position> sol=askingTheServerForSolution(algo.toString(), maze);
+
+				
+				if(sol==null)
 				{
-					Maze3dSearchable ms=new Maze3dSearchable(maze);
-					
-					Searcher<Position> bfs=new BFS<Position>();
-					Solution<Position> sol=bfs.search(ms);
-					mazeSolutions.put(maze, sol);
-					
-					mazeHalfCollection.put(paramArray[0].toString(),maze);
-					
-					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
-					return "solve from";
-				}
-				else if(algo.toString().equals("astar air distance"))
-				{
-					Maze3dSearchable ms=new Maze3dSearchable(maze);
-					Searcher<Position> AstarAir=new AStar<Position>(new MazeAirDistance());
-					
-					Solution<Position> sol=AstarAir.search(ms);
-					
-					mazeSolutions.put(maze, sol);
-					
-					//put it into half collection of mazes with half solutions(solutions that begin from the middle of the maze)
-					mazeHalfCollection.put(paramArray[0].toString(),maze);
-					
-					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
-					return "solve from";
-				}
-				else if(algo.toString().equals("astar manhatten distance"))
-				{
-					Maze3dSearchable ms=new Maze3dSearchable(maze);
-					Searcher<Position> AStarMan=new AStar<Position>(new MazeManhattenDistance());
-					
-					Solution<Position> sol=AStarMan.search(ms);
-					mazeSolutions.put(maze, sol);
-					
-					mazeHalfCollection.put(paramArray[0].toString(),maze);
-					
-					solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
-					return "solve from ";
-				}
-				else
-				{
-					errorCode="Invalid algorithm";
+					errorCode="server is closed,please open the server first";
 					return "error";
 				}
 				
-			
-				
+				mazeSolutions.put(maze, sol);
+				mazeHalfCollection.put(paramArray[0].toString(),maze);
+				solveHalfMazeCode="Half solution for "+paramArray[0]+ " is ready";
+				return "solve from";
+	
 			}
 		});
 		
@@ -1252,9 +1179,7 @@ public class MyModel extends CommonModel
 	
 	public void handleLoadXML(String[] path)
 	{
-		
-		
-		
+
 		StringBuilder sb=new StringBuilder();
 		
 		if(path==null)
@@ -1283,7 +1208,7 @@ public class MyModel extends CommonModel
 			if(!f.exists())
 			{
 				XMLEncoder xmlE = new XMLEncoder(new FileOutputStream(sb.toString()));
-				xmlE.writeObject(new Properties(10, "astar air distance", "prim",5,"gui"));
+				xmlE.writeObject(new Properties(10, "astar air distance", "prim","gui"));
 				xmlE.close();
 			}
 			XMLDecoder xmlD= new XMLDecoder(new FileInputStream(sb.toString()));
@@ -1305,6 +1230,80 @@ public class MyModel extends CommonModel
 			
 			e.printStackTrace();
 		}
+		
+	}
+
+
+	/**
+	 * asking the server to generate solution
+	 * @param algo the algoritm to search
+	 * @param maze the maze that need solution
+	 * @return solution for the specified maze
+	 */
+	private Solution<Position> askingTheServerForSolution(String algo,Maze3d maze)
+	{
+		Socket theServer=null;
+		PrintWriter outToServer=null;
+		BufferedReader inFromServer=null;
+		
+		ObjectOutputStream mazeToServer=null;
+		ObjectInputStream solutionFromServer=null;
+		
+		try {
+			//defines the socket and the input and output sources
+
+			theServer = new Socket(clientProperties.getServerIp().toString(),clientProperties.getServerPort());
+			
+			//now we connected to the server
+			outToServer = new PrintWriter(theServer.getOutputStream());
+			inFromServer=new BufferedReader(new InputStreamReader(theServer.getInputStream()));
+
+			outToServer.println("hello\n");
+			outToServer.flush();
+			
+			
+			inFromServer.readLine();
+			
+			ArrayList<Object> packetToServer=new ArrayList<Object>();
+			packetToServer.add(algo);
+			packetToServer.add(maze);
+		
+
+			
+			mazeToServer=new ObjectOutputStream(theServer.getOutputStream());
+			mazeToServer.writeObject(packetToServer);
+			mazeToServer.flush();
+			
+			solutionFromServer=new ObjectInputStream(theServer.getInputStream());
+			
+			Solution<Position> sol=(Solution<Position>)solutionFromServer.readObject();
+
+			System.out.println("sol  " +sol);
+			mazeToServer.close();
+			solutionFromServer.close();
+			outToServer.close();
+			inFromServer.close();
+			
+			theServer.close();
+			return sol;
+		}
+		catch (IOException e) 
+		{
+			//e.printStackTrace();
+			return null;
+		}
+		catch (ClassNotFoundException e) 
+		{
+			//e.printStackTrace();
+			try {
+				theServer.close();
+			} catch (IOException e1) {
+				return null;
+				//e1.printStackTrace();
+			}
+			return null;
+		}
+
 		
 	}
 	
@@ -1370,8 +1369,7 @@ public class MyModel extends CommonModel
 	{
 		return fileSize;
 	}
-	/*public void handleCommands(String[] args)
-	{
-		
-	}*/
+	
+
+	
 }
