@@ -63,7 +63,7 @@ public class MazeWindow extends BasicWindow
 		//Image im=new Image(display, "pics/hot_air_ballon.jpg");
 		
 		shell.setLayout(new GridLayout(2, false));
-		shell.setText("Super Maze game");
+		shell.setText("Minions Maze!");
 		
 		//setting the menu bar
 		menuBar = new Menu(shell, SWT.BAR);

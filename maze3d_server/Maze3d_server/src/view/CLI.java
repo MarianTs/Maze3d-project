@@ -3,7 +3,11 @@ package view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+/**
+ * command line interface
+ * @author Marian & Lidor
+ *
+ */
 public class CLI extends CommonView {
 	
 	BufferedReader in;
@@ -24,6 +28,9 @@ public class CLI extends CommonView {
 		this.canBeClosed=false;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void start() 
 	{
 		out.println("Hello,Welcome to server command line!\nPlease Enter command:\n\tto open the server type:open the server,\n\tto close type:close the server");
@@ -57,17 +64,26 @@ public class CLI extends CommonView {
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getUserCommand()
 	{
 		return line;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showOpenTheServer(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showClose(String message)
 	{
 		canBeClosed=true;
@@ -75,11 +91,19 @@ public class CLI extends CommonView {
 		out.println("bye bye");
 		out.flush();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showError(String message)
 	{
 		out.println(message);
 		out.flush();
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void showMessages(String message)
 	{
 		out.println(message);

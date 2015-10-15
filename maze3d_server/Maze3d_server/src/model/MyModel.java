@@ -14,7 +14,11 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * calculating the command and return it to the view
+ * @author Marian & Lidor
+ *
+ */
 
 
 public class MyModel extends CommonModel 
@@ -37,7 +41,9 @@ public class MyModel extends CommonModel
 	String closeCode;
 	String messageCode;
 	
-	
+	/**
+	 * constructor the model
+	 */
 	public MyModel() 
 	{
 		//deciding which client handler to work with
@@ -87,6 +93,9 @@ public class MyModel extends CommonModel
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void openTheServer()
 	{
 		
@@ -110,8 +119,12 @@ public class MyModel extends CommonModel
 					try {
 						final Socket someClient=server.accept();
 						
+						
+						messageCode=someClient.toString();
+						setChanged();
+						notifyObservers("pass messages");
+						
 						//Listens for a connection to be made to this socket and accepts it.
-						System.out.println(someClient);
 						if(someClient!=null)
 						{
 							//we put it in a thread in order to listen a amount of clients
@@ -173,6 +186,9 @@ public class MyModel extends CommonModel
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void closeServer()
 	{
 		stop=true;
@@ -239,14 +255,24 @@ public class MyModel extends CommonModel
 		notifyObservers("close the server");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getCloseCode() {
 		return closeCode;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getOpenCode() 
 	{
 		return openCode;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getMessageCode() {
 		return messageCode;
 	}

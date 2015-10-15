@@ -9,7 +9,11 @@ import model.MyModel;
 import presenter.Presenter;
 import view.CLI;
 import view.CommonView;
-
+/**
+ * starting the server MVP
+ * @author Marian & Lidor
+ *
+ */
 public class Run {
 
 	public static void main(String[] args) 

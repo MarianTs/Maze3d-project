@@ -26,13 +26,19 @@ import algorithms.search.Searcher;
 import algorithms.search.Solution;
 import algorithms.search.State;
 import algotithms.demo.Maze3dSearchable;
-
+/**
+ * a client handler that handle solution for a specified maze
+ * @author Marian & Lidor
+ *
+ */
 public class MazeSolutionClientHandler implements ClientHandler
 {
 	
 	HashMap<Maze3d, Solution<Position>> mazeSolutions;
 	
-	
+	/**
+	 * constructor
+	 */
 	public MazeSolutionClientHandler()
 	{
 		mazeSolutions=new HashMap<Maze3d,Solution<Position>>();
@@ -61,6 +67,10 @@ public class MazeSolutionClientHandler implements ClientHandler
 			}		
 		}
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleClient(InputStream inFromClient, OutputStream outToClient) 
 	{
@@ -70,13 +80,14 @@ public class MazeSolutionClientHandler implements ClientHandler
 			PrintWriter out=new PrintWriter(outToClient);
 			String line;
 
-
+			// wait for a hello from the client
 			if((line=in.readLine()).equals("hello"))
 			{
-
+				//returning ok to the client
 				out.println("ok");
 				out.flush();
-
+				
+				//reading the arraylist from client with maze and algorithm
 				ObjectInputStream mazeFromClientt=new ObjectInputStream(inFromClient);
 				ArrayList<Object> packetFromClient=(ArrayList<Object>)mazeFromClientt.readObject();
 				String algo=(String)packetFromClient.get(0);
@@ -85,11 +96,16 @@ public class MazeSolutionClientHandler implements ClientHandler
 
 				ObjectOutputStream solutionToClient=new ObjectOutputStream(outToClient);
 
+				
 				Solution<Position> sol=new Solution<Position>(new ArrayList<State<Position>>());
+				
+				//checking if we have the solution in our collection
 				if(mazeSolutions.containsKey(maze))
 				{
 					sol=mazeSolutions.get(maze);
 				}
+				
+				//checking which algorithm to use when solving the maze
 				if(algo.intern()=="bfs")
 				{
 					Maze3dSearchable ms=new Maze3dSearchable(maze);
@@ -97,8 +113,6 @@ public class MazeSolutionClientHandler implements ClientHandler
 					Searcher<Position> bfs=new BFS<Position>();
 					sol=bfs.search(ms);
 					mazeSolutions.put(maze, sol);
-
-
 
 				}
 				else if(algo.intern()=="astar air distance")
@@ -110,8 +124,6 @@ public class MazeSolutionClientHandler implements ClientHandler
 
 					mazeSolutions.put(maze, sol);
 
-
-
 				}
 				else if(algo.intern()=="astar manhatten distance")
 				{
@@ -122,10 +134,9 @@ public class MazeSolutionClientHandler implements ClientHandler
 
 					mazeSolutions.put(maze, sol);
 
-
-
 				}
 				
+				//write solution to the client
 				solutionToClient.writeObject(sol);
 				solutionToClient.flush();
 
@@ -150,6 +161,9 @@ public class MazeSolutionClientHandler implements ClientHandler
 
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void close()
 	{
 		try 

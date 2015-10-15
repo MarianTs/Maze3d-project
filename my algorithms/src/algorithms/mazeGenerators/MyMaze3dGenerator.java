@@ -17,9 +17,20 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 	public Maze3d generate(int size_x, int size_y, int size_z) 
 	{
 		Maze3d myMaze;
-		if((size_x<4)||(size_y<4)||(size_z<4))
+		if(size_x<4)
 		{
-			myMaze=new Maze3d(4, 4, 4);
+			myMaze=new Maze3d(4, size_y, size_z);
+			size_x=4;
+		}
+		if(size_y<4)
+		{
+			myMaze=new Maze3d(size_x, 4, size_z);
+			size_y=4;
+		}
+		if(size_z<4)
+		{
+			myMaze=new Maze3d(size_x, size_y, 4);
+			size_z=4;
 		}
 		else
 		{

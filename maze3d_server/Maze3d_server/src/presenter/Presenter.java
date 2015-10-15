@@ -7,7 +7,11 @@ import java.util.Observer;
 
 import model.Model;
 import view.View;
-
+/**
+ * connecting between the view and model
+ * @author Marian & Lidor
+ *
+ */
 public class Presenter implements Observer {
 
 	Model m;
@@ -15,6 +19,11 @@ public class Presenter implements Observer {
 	HashMap<String, Command> viewCommands;
 	HashMap<String, Command> modelCommands;
 	
+	/**
+	 * constructor using fields
+	 * @param m - model
+	 * @param ui - user interface type
+	 */
 	public Presenter(Model m,View ui) 
 	{
 		
@@ -25,7 +34,9 @@ public class Presenter implements Observer {
 		initCommands();
 	}
 	
-	
+	/**
+	 * get notification from the observables and activate the suitable command
+	 */
 	@Override
 	public void update(Observable o, Object arg) 
 	{
@@ -68,6 +79,9 @@ public class Presenter implements Observer {
 		}
 	}
 	
+	/**
+	 * initialize the commands
+	 */
 	public void initCommands()
 	{
 		//commands that came from view

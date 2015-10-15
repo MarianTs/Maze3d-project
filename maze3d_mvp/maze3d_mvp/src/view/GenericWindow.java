@@ -75,61 +75,30 @@ public class GenericWindow extends BasicWindow
 						@Override
 						public void modifyText(ModifyEvent arg0) {
 							try {
-								
+								if(Integer.parseInt(t.getText())<=0)
+								{
+									showMessageBox("number must be positive");
+								}
 								m.invoke(obj,Integer.parseInt(t.getText()));
 							} catch (IllegalAccessException e) {
-								showMessageBox(e);
+								showMessageBox(e.getMessage());
 							} catch (IllegalArgumentException e) {
-								showMessageBox(e);
+								showMessageBox(e.getMessage());
 
 							} catch (InvocationTargetException e) {
-								showMessageBox(e);
+								showMessageBox(e.getMessage());
 
 							}
 							
 						}
 					});
 					
-					
-				}
-				else if(paramArr[0].getType().isAssignableFrom(String.class))
-				{
-					t.addModifyListener(new ModifyListener() {
-						
-						@Override
-						public void modifyText(ModifyEvent arg0) {
-							try {
-								
-								m.invoke(obj,t.getText());
-							} catch (IllegalAccessException e) {
-								showMessageBox(e);
-							} catch (IllegalArgumentException e) {
-								showMessageBox(e);
-
-							} catch (InvocationTargetException e) {
-								showMessageBox(e);
-
-							}
-							
-						}
-					});
-				}
-				else if(paramArr[0].getType().isEnum())
-				{
 					
 				}
 				
+				
 			}
-			
-			
-			
-			/*if(m.getType().isEnum())
-			{
-				//String[] items =(String[])f.getClass().getEnumConstants();
-				//Combo combo = new Combo(shell, SWT.DROP_DOWN);
-				//combo.setItems(items);
-			}*/
-			
+
 		}
 		Button ok=new Button(shell,SWT.PUSH);
 		ok.setText("ok");
@@ -137,19 +106,15 @@ public class GenericWindow extends BasicWindow
 		ok.addSelectionListener(new SelectionListener() {
 			
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				
+			public void widgetSelected(SelectionEvent arg0) 
+			{
 				close();
-				
 			}
-			
+
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
 		});
-		//ok.addListener(SWT.Selection, listenerCollection.get("ok"));
+
 		
 		
 		Button cancel=new Button(shell,SWT.PUSH);
@@ -171,10 +136,10 @@ public class GenericWindow extends BasicWindow
 	 * showing errors in message box
 	 * @param e exception to show
 	 */
-	public void showMessageBox(Exception e)
+	public void showMessageBox(String s)
 	{
 		MessageBox messageBox = new MessageBox(shell,SWT.ICON_ERROR| SWT.OK);
-		messageBox.setMessage(e.getMessage());
+		messageBox.setMessage(s);
 		messageBox.setText("Error");
 		messageBox.open();
 	}

@@ -91,7 +91,7 @@ public class Maze2dDisplay extends MazeDisplay {
 
 						}
 					}
-
+					
 					if(characterPlace.getX()==maze.getGoalPosition().getX())
 					{
 						
@@ -108,6 +108,9 @@ public class Maze2dDisplay extends MazeDisplay {
 						e.gc.setBackground(new Color(null,255,0,0));
 						e.gc.setBackground(new Color(null,0,0,0));
 					}
+					
+					characterPic.paint(e,characterPlace.getZ()*cellX,characterPlace.getY()*cellY, cellX, cellY);
+					
 					if(characterPlace.equals(maze.getGoalPosition()))
 					{
 						
@@ -116,7 +119,7 @@ public class Maze2dDisplay extends MazeDisplay {
 					}
 
 
-					characterPic.paint(e,characterPlace.getZ()*cellX,characterPlace.getY()*cellY, cellX, cellY);
+					
 				}
 			}
 		});
