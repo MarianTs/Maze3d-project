@@ -64,6 +64,7 @@ public abstract class BasicWindow
 	 	 */
 		public void run() 
 		{
+
 			//initWidgets();
 			//mainShell.pack();
 
@@ -83,7 +84,7 @@ public abstract class BasicWindow
 			 {
 				 display.dispose();
 			 }
-			 
+
 		}
 		
 		/**

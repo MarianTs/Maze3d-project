@@ -112,18 +112,18 @@ public class MyMaze3dGenerator extends CommonMaze3dGenarator {
 		{
 			return true;
 		}
-		else if((xa+1==xb)||(xa-1==xb))
-		{
-			return true;
-		}
-		else if((ya-1==yb)||(ya-1==yb))
-		{
-			return true;
-		}
-		else if((za+1==zb)||(za-1==zb))
-		{
-			return true;
-		}
+//		else if((xa+1==xb)||(xa-1==xb))
+//		{
+//			return true;
+//		}
+//		else if((ya-1==yb)||(ya-1==yb))
+//		{
+//			return true;
+//		}
+//		else if((za+1==zb)||(za-1==zb))
+//		{
+//			return true;
+//		}
 		else 
 		{
 			return false;

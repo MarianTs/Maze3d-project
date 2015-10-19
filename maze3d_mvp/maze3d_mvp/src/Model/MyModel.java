@@ -228,8 +228,6 @@ public class MyModel extends CommonModel
 			notifyObservers(s);
 			return;
 		}
-		
-		
 
 		Future<String> future=threadPool.submit(new Callable<String>() 
 		{
@@ -237,6 +235,8 @@ public class MyModel extends CommonModel
 			@Override
 			public String call() throws Exception
 			{
+				
+				
 				Maze3dGenerator mg;
 				if(mazeParam.length==4)//if client entered command without the algorithm
 				{//take the algorithm from the xml file of properties
@@ -285,9 +285,13 @@ public class MyModel extends CommonModel
 				//entering the maze into the collection,in order to take it out when necessary
 				mazeCollection.put(mazeParam[0].toString(),maze);
 				
-				
+				//System.out.println("in future "+maze);
 				generate3dmazeCode="maze " + mazeParam[0].toString() + " is ready";
+				
+				
 				return "generate 3d maze";//returning string into Future object
+				
+				
 			}
 		});
 		
@@ -296,8 +300,10 @@ public class MyModel extends CommonModel
 			
 			@Override
 			public void run() {
+			
 				try 
 				{
+					
 					String message=future.get();
 					if(message.intern()=="error")
 					{
@@ -306,17 +312,20 @@ public class MyModel extends CommonModel
 						String[] s=new String[1];
 						s[0]="error";
 						notifyObservers(s);
+						
 						return;
 					}
 					else
 					{
-						
+						//System.out.println("in get of furure ");
 						setChanged();
 						String[] s=new String[1];
 						s[0]="generate 3d maze";
 						notifyObservers(s);
+						
 						return;
 					}
+					
 					
 				}
 				
@@ -332,6 +341,7 @@ public class MyModel extends CommonModel
 				
 			}
 		});
+		
 		
 	}
 	/**
@@ -550,7 +560,11 @@ public class MyModel extends CommonModel
 		threadPool.shutdown();
 		try 
 		{
-			while(!threadPool.awaitTermination(10, TimeUnit.SECONDS));
+			int i=0;
+			while(!threadPool.awaitTermination(10, TimeUnit.SECONDS))
+			{
+				System.out.println(i++);
+			}
 			//waits for the threads to finish and shutting down the thread pool
 		} 
 		catch (InterruptedException e) 
@@ -1071,6 +1085,7 @@ public class MyModel extends CommonModel
 			@Override
 			public String call() throws Exception
 			{
+				
 				//constructing the name of the algorithm to solve the maze
 				StringBuilder algo=new StringBuilder();
 				if(paramArray.length==4)

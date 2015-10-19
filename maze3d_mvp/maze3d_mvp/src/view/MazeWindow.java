@@ -146,7 +146,7 @@ public class MazeWindow extends BasicWindow
 		message.setLayoutData(new GridData(SWT.FILL,SWT.FILL,false,false,1,1));
 
 		//exit button
-		Button exit=new Button(shell, SWT.PUSH);
+		exit=new Button(shell, SWT.PUSH);
 		exit.setText("exit");
 		exit.setLayoutData(new GridData(SWT.FILL, SWT.UP, false, false, 1, 1));
 
@@ -235,6 +235,7 @@ public class MazeWindow extends BasicWindow
 			public void run() {
 				if(!isDisposed)
 				{
+					start.setEnabled(!isSolvingNow);
 					solve.setEnabled(!isSolvingNow);
 					hint.setEnabled(!isSolvingNow);
 					reset.setEnabled(!isSolvingNow);

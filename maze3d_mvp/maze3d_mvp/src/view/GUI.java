@@ -1,7 +1,5 @@
 package view;
 
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,19 +77,11 @@ public class GUI extends CommonView
 				 messageBox.setText("Exiting Application");
 				 if(messageBox.open()==SWT.YES)
 				 {
-//					 if((thread!=null)&&(!thread.isInterrupted()))
-//					 {
-//						 thread.interrupt();
-//					 }
-					 
-					 
 					 message="exit";
 					 setChanged();
 					 notifyObservers();
-					 
-					 
 					 event.doit=true;
-					 //mainWindow.close();
+
 				 }
 				 else
 				 {
@@ -106,13 +96,9 @@ public class GUI extends CommonView
 		{
 			 public void handleEvent(Event event) 
 			 {
-//				 if((thread!=null)&&(!thread.isInterrupted()))
-//				 {
-//					 thread.interrupt();
-//				 }
 				 FileDialog fd=new FileDialog(mainWindow.getShell(),SWT.OPEN);
 				 fd.setText("xml loader");
-				 fd.setFilterPath("*.xml");
+				 fd.setFilterPath("./");
 				 String[] filterExt = {  "*.xml" };
 				 fd.setFilterExtensions(filterExt);
 				 path = fd.open();
@@ -126,11 +112,7 @@ public class GUI extends CommonView
 			
 			@Override
 			public void handleEvent(Event arg0) {
-//				if((thread!=null)&&(!thread.isInterrupted()))
-//				 {
-//					 thread.interrupt();
-//				 }
-				
+
 				genericWindow=new GenericWindow(200,200,listenerCollection,new MazeProperties());
 				genericWindow.run();
 				MazeProperties mp=(MazeProperties)genericWindow.getObj();
@@ -364,7 +346,7 @@ public class GUI extends CommonView
 	@Override
 	public void showGenerate3dMaze(String message) 
 	{
-		//!
+
 		this.message="display m";
 
 		setChanged();
@@ -513,7 +495,13 @@ public class GUI extends CommonView
 			{
 				return;
 			}
+			if(al.size()<2)
+			{
+				mainWindow.showMessageBox("You are already in the goal Position,can't show hint");
+				return;
+			}
 			Position p=al.get(1).getState();
+			
 			if(p!=null)
 			{
 				int x=p.getX();
