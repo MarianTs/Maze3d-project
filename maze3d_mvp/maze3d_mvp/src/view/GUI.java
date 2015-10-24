@@ -192,7 +192,7 @@ public class GUI extends CommonView
 				int y=characterPlace.getY();
 				int z=characterPlace.getZ();
 				int[][][] mazeArr=maze.getMaze();
-				if(arg.keyCode==SWT.ARROW_RIGHT)
+				if((arg.keyCode==SWT.ARROW_RIGHT)||(arg.keyCode==SWT.KEYPAD_6))
 				{
 					
 					if((z<mazeArr[0][0].length-1)&&(mazeArr[x][y][z+1]==0))
@@ -201,7 +201,7 @@ public class GUI extends CommonView
 						mainWindow.moveCharacterInCanvas(x, y, z+1,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
-				else if(arg.keyCode==SWT.ARROW_LEFT)
+				else if((arg.keyCode==SWT.ARROW_LEFT)||(arg.keyCode==SWT.KEYPAD_4))
 				{
 					if((z>0)&&(mazeArr[x][y][z-1]==0))
 					{
@@ -209,7 +209,7 @@ public class GUI extends CommonView
 						mainWindow.moveCharacterInCanvas(x, y, z-1,canBeMovedUp(),canBeMovedDown(),false,isSolvingNow);
 					}
 				}
-				else if(arg.keyCode==SWT.ARROW_UP)
+				else if((arg.keyCode==SWT.ARROW_UP)||(arg.keyCode==SWT.KEYPAD_8))
 				{
 					if((y>0)&&(mazeArr[x][y-1][z]==0))
 					{
@@ -218,7 +218,7 @@ public class GUI extends CommonView
 					}
 
 				}
-				else if(arg.keyCode==SWT.ARROW_DOWN)
+				else if((arg.keyCode==SWT.ARROW_DOWN)||(arg.keyCode==SWT.KEYPAD_2))
 				{
 					if((y<mazeArr[0].length-1)&&(mazeArr[x][y+1][z]==0))
 					{
