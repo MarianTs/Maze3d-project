@@ -240,12 +240,15 @@ public class MazeWindow extends BasicWindow
 					hint.setEnabled(!isSolvingNow);
 					reset.setEnabled(!isSolvingNow);
 					menuBar.setEnabled(!isSolvingNow);
-					//exit.setEnabled(false);
+					
 				}
 			}
 		});
+		if(!isDisposed)
+		{
+			mazeCanvas.setCharacterInPlace(x,y,z);
+		}
 		
-		mazeCanvas.setCharacterInPlace(x,y,z);
 		
 	}
 	
@@ -292,6 +295,7 @@ public class MazeWindow extends BasicWindow
 	public void close()
 	{
 		isDisposed = true;
+		mazeCanvas.dispose();
 		shell.dispose();
 		
 

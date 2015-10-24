@@ -129,6 +129,18 @@ public class GenericWindow extends BasicWindow
 				
 			}
 		});
+		
+		shell.addListener(SWT.Close, new Listener() {
+			
+			@Override
+			public void handleEvent(Event arg0) {
+				obj=null;
+				close();
+				
+			}
+		});
+		
+		
 		shell.pack();
 
 	}

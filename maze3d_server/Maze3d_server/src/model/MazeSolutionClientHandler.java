@@ -102,6 +102,7 @@ public class MazeSolutionClientHandler implements ClientHandler
 				//checking if we have the solution in our collection
 				if(mazeSolutions.containsKey(maze))
 				{
+					System.out.println("found in the collection");
 					sol=mazeSolutions.get(maze);
 				}
 				
